@@ -1,0 +1,90 @@
+/* src/styles/auth/RegisterForm.css */
+
+/* Định nghĩa biến CSS để dễ dàng tùy chỉnh */
+:root {
+  --primary-color: #4a90e2; /* Xanh dương chủ đạo */
+  --secondary-color: #f7f9fc; /* Màu nền phụ */
+  --text-color: #333333;
+  --text-muted-color: #888888;
+  --border-color: #e0e0e0;
+  --border-radius-base: 8px;
+  --box-shadow-base: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Áp dụng font và màu nền cho form */
+.register-form {
+  background: white;
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-base);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: var(--text-color);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Hiệu ứng khi hover */
+.register-form:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Nhóm các trường nhập liệu */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-muted-color);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-base);
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: var(--secondary-color);
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi focus vào input */
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+/* Nút đăng ký */
+button[type="submit"] {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi hover vào nút */
+button[type="submit"]:hover {
+  background-color: #3e7ac2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng khi nhấn nút */
+button[type="submit"]:active {
+  transform: translateY(0);
+}
