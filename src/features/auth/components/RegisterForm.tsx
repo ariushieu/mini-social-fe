@@ -252,6 +252,10 @@ const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
                 {message}
               </div>
             )}
+
+            <div className="login-link">
+              Đã có tài khoản? <a href="/auth/login">Đăng nhập</a>
+            </div>
           </form>
         </div>
 

@@ -25,6 +25,22 @@
   color: #333;
 }
 
+.login-link {
+  margin-top: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.login-link a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
 .register-wrapper {
   width: 100%;
   max-width: 985px;
