@@ -29,7 +29,7 @@ const VerifyPage = () => {
 
         if (res.data.success) {
           setTimeout(() => {
-            navigate("/login");
+            navigate("/auth/login");
           }, 5000);
         }
       })
