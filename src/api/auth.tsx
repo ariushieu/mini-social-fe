@@ -2,6 +2,8 @@ import axios from "axios";
 import { type LoginRequest, type LoginResponse } from "../types/auth/AuthLogin";
 import {type RegisterRequest, type RegisterResponse } from "../types/auth/AuthRegister";
 
+import '../../public/images/background.jpg'
+
 const API_URL = 'http://localhost:8080/api/auth';
 
 export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
