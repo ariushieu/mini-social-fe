@@ -1,21 +1,24 @@
-import { LocalDateTime } from "@js-joda/core";
-
 export interface LoginRequest {
   email: string;
   password: string;
 }
-export interface LoginResponse {
+
+export interface UserData {
   id: number;
   username: string;
   email: string;
   fullName: string;
   bio: string;
   role: string;
-  profilePicture: string;
+  profilePicture: string | null;
   followerCount: number;
   followingCount: number;
-  joinDate: LocalDateTime;
-  lastLogin: LocalDateTime;
+  joinDate: string;
+  lastLogin: string;
+}
+
+export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
+  user: UserData;
 }

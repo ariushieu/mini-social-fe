@@ -1,853 +1,1933 @@
-/* Slothui Interface Styles */
+
+:root {
+    --color-purple: #7B4397; 
+    --color-modal-background: #f0f3ff; 
+    --color-border: #e5e7eb;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-tertiary: #9ca3af;
+    --color-background-tertiary: #f3f4f6;
+    --color-background-secondary: #f9fafb;
+    --color-primary: #9333ea;
+    --color-primary-dark: #7c3aed;
+    --color-background-panel: #f0f0f0;
+}
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.5;
+    background: #f5f5f5;
+    margin: 0;
+    /* padding: 0 1rem; */
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
 }
 
-/* Layout */
+body.dark-mode {
+    background: #0a0f1a;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+body.dark-mode * {
+    scrollbar-color: #475569 #1e293b;
+}
+
+
 .slothui-container {
-  min-height: 100vh;
-  background-color: #faf5ff;
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  width: 100%;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    height: 100vh;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-/* Centering wrapper: keep inner 1200px grid (sidebar | feed | profile) */
 .main-content {
-  flex: 1;
-  display: flex;
-  gap: 1rem;
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    height: 100vh;
+    box-sizing: border-box;
 }
 
-/* Dark mode base */
 .slothui-container.dark {
-  background-color: #0f172a;
+    background-color: #0f172a;
 }
 
-.slothui-container.dark .sidebar,
-.slothui-container.dark .feed-container,
+.slothui-container.dark .sidebar {
+    background-color: #0f172a;
+    border-right-color: #1e293b;
+}
+
+.slothui-container.dark .feed-container {
+    background-color: #0f172a;
+}
+
+.slothui-container.dark .profile-panel {
+    background-color: #0f172a;
+    border-left-color: #1e293b;
+}
+
 .slothui-container.dark .profile-card {
-  background-color: #0b1220;
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.4);
+    background-color: transparent;
 }
 
 .slothui-container.dark .logo-title,
 .slothui-container.dark .user-name,
 .slothui-container.dark .post-user-info h4,
 .slothui-container.dark .profile-name,
-.slothui-container.dark .profile-section-title {
-  color: #e5e7eb;
+.slothui-container.dark .profile-section-title,
+.slothui-container.dark .nav-text,
+.slothui-container.dark .feed-tab.active,
+.slothui-container.dark .profile-stat h3,
+.slothui-container.dark .contact-details h4 {
+    color: #f1f5f9;
 }
-
-.slothui-container.dark .nav-item:hover { background-color: #111827; }
-.slothui-container.dark .nav-item.active { background-color: #1f2937; color: #a78bfa; }
-.slothui-container.dark .nav-badge { background-color: #111827; color: #9ca3af; }
-.slothui-container.dark .nav-badge.active { background-color: #312e81; color: #a78bfa; }
-
-.slothui-container.dark .search-input { background-color: #111827; color: #e5e7eb; }
-.slothui-container.dark .search-input:focus { background-color: #1f2937; }
-
-.slothui-container.dark .feed-header { border-bottom-color: #1f2937; }
-.slothui-container.dark .feed-tab:not(.active) { color: #9ca3af; }
-.slothui-container.dark .composer-textarea { color: #e5e7eb; }
-.slothui-container.dark .composer-tool { color: #9ca3af; }
-
-.slothui-container.dark .posts-feed { border-top-color: #1f2937; }
-.slothui-container.dark .post { border-bottom-color: #1f2937; }
-.slothui-container.dark .post-text { color: #e5e7eb; }
-.slothui-container.dark .post-menu:hover { background-color: #111827; }
-.slothui-container.dark .post-action { color: #9ca3af; }
 
 .slothui-container.dark .profile-username,
 .slothui-container.dark .profile-location,
 .slothui-container.dark .profile-bio,
 .slothui-container.dark .user-role,
 .slothui-container.dark .post-user-info p,
-.slothui-container.dark .loading-text {
-  color: #9ca3af;
+.slothui-container.dark .loading-text,
+.slothui-container.dark .profile-stat p,
+.slothui-container.dark .contact-details p,
+.slothui-container.dark .highlight-name,
+.slothui-container.dark .post-timestamp {
+    color: #94a3b8;
 }
 
-.slothui-container.dark .contact-details h4 { color: #e5e7eb; }
-.slothui-container.dark .contact-details p { color: #9ca3af; }
-.slothui-container.dark .contact-arrow { color: #6b7280; }
-
-/* Floating theme toggle */
-.theme-toggle {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 9999px;
-  border: none;
-  background-color: #111827;
-  color: #f9fafb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+.slothui-container.dark .post-text,
+.slothui-container.dark .composer-textarea,
+.slothui-container.dark .composer-input-placeholder {
+    color: #cbd5e1;
 }
 
-.theme-toggle-icon { width: 1.25rem; height: 1.25rem; }
+.slothui-container.dark .nav-item { color: #cbd5e1; }
+.slothui-container.dark .nav-item:hover { background-color: #1e293b; }
+.slothui-container.dark .nav-item.active { background-color: #334155; color: #a78bfa; }
+.slothui-container.dark .nav-badge { background-color: #1e293b; color: #94a3b8; }
+.slothui-container.dark .nav-badge.active { background-color: #4c1d95; color: #c4b5fd; }
+
+.slothui-container.dark .nav-dark-toggle {
+    color: #94a3b8;
+}
+.slothui-container.dark .nav-dark-toggle:hover {
+    color: #f1f5f9;
+}
+
+.slothui-container.dark .search-input { 
+    background-color: #1e293b; 
+    color: #f1f5f9;
+    border: 1px solid #334155;
+}
+.slothui-container.dark .search-input:focus { 
+    background-color: #334155;
+    border-color: #475569;
+}
+.slothui-container.dark .search-input::placeholder {
+    color: #64748b;
+}
+
+.slothui-container.dark .feed-header { border-bottom-color: #334155; }
+.slothui-container.dark .feed-tab:not(.active) { color: #94a3b8; }
+.slothui-container.dark .feed-tab.active { color: #c4b5fd; }
+.slothui-container.dark .composer-tool { color: #94a3b8; }
+
+.slothui-container.dark .posts-feed { border-top-color: #334155; }
+.slothui-container.dark .post { border-bottom-color: #334155; }
+.slothui-container.dark .post-menu:hover { background-color: #1e293b; }
+.slothui-container.dark .post-action { color: #94a3b8; }
+.slothui-container.dark .post-hashtag { color: #c4b5fd; }
+
+.slothui-container.dark .post-composer {
+    background-color: #0f172a;
+}
+.slothui-container.dark .composer-input-placeholder {
+    background-color: #1e293b;
+}
+
+.slothui-container.dark .contact-arrow { color: #64748b; }
 
 .loading-container {
-  min-height: 100vh;
-  background-color: #faf5ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    min-height: 100vh;
+    background-color: #faf5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .loading-text {
-  color: #9333ea;
-  font-size: 1.125rem;
+    color: #9333ea;
+    font-size: 1.125rem;
 }
 
-/* Sidebar */
 .sidebar {
-  width: 320px;
-  background-color: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
+    width: 320px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid #e5e7eb;
 }
 
 .sidebar-logo {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .logo-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .logo-icon {
-  width: 2rem;
-  height: 2rem;
-  background-color: #9333ea;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.picture-logo{
+    width: 125%;
 }
 
 .logo-text {
-  color: white;
-  font-weight: bold;
-  font-size: 0.875rem;
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
 }
 
 .logo-title {
-  font-weight: bold;
-  font-size: 1.25rem;
-  color: #111827;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #111827;
 }
 
-/* Search */
 .search-container {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .search-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-  width: 1.25rem;
-  height: 1.25rem;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .search-input {
-  width: 100%;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
-  background-color: #f3f4f6;
-  border: none;
-  border-radius: 0.5rem;
-  color: #374151;
-  outline: none;
-  transition: all 0.2s;
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    background-color: #f3f4f6;
+    border: none;
+    border-radius: 0.5rem;
+    color: #374151;
+    outline: none;
+    transition: all 0.2s;
 }
 
 .search-input:focus {
-  background-color: #e5e7eb;
-  ring: 2px solid #9333ea;
+    background-color: #e5e7eb;
+    outline: 2px solid #9333ea;
+    outline-offset: -2px;
 }
 
-/* Navigation */
 .nav-container {
-  flex: 1;
-  padding: 1rem;
+    flex: 1;
+    padding: 1rem;
 }
 
 .nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
 }
 
 .nav-item.active {
-  background-color: #f3e8ff;
-  color: #9333ea;
+    background-color: #f3e8ff;
+    color: #9333ea;
 }
 
 .nav-item:hover {
-  background-color: #f3f4f6;
+    background-color: #f3f4f6;
 }
 
 .nav-item-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .nav-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .nav-text {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .nav-badge {
-  background-color: #e5e7eb;
-  color: #6b7280;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
 }
 
 .nav-badge.active {
-  background-color: #ddd6fe;
-  color: #9333ea;
+    background-color: #ddd6fe;
+    color: #9333ea;
 }
 
-/* Pro Modal */
-.pro-modal {
-  padding: 1rem;
+.nav-dark-toggle {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: color 0.2s;
 }
 
-.pro-modal-content {
-  background-color: #f3f4f6;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  position: relative;
+.nav-dark-toggle:hover {
+    color: #374151;
 }
 
-.pro-modal-close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  color: #9ca3af;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  transition: color 0.2s;
-}
-
-.pro-modal-close:hover {
-  color: #6b7280;
-}
-
-.pro-modal-icon {
-  margin-bottom: 0.5rem;
-}
-
-.pro-modal-text {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.75rem;
-}
-
-.pro-modal-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.pro-modal-dismiss {
-  font-size: 0.875rem;
-  color: #6b7280;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.pro-modal-dismiss:hover {
-  color: #374151;
-}
-
-.pro-modal-upgrade {
-  font-size: 0.875rem;
-  color: #9333ea;
-  font-weight: 500;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.pro-modal-upgrade:hover {
-  color: #7c3aed;
-}
-
-/* User Profile Bottom */
 .user-profile-bottom {
-  padding: 1rem;
-  border-top: 1px solid #e5e7eb;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
 }
 
 .user-profile-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .user-avatar-small {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
 }
 
 .user-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #111827;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
 }
 
 .user-role {
-  font-size: 0.75rem;
-  color: #6b7280;
+    font-size: 0.75rem;
+    color: #6b7280;
 }
-
-/* Main Content */
-/* keep existing rule location intact (moved earlier with overrides) */
 
 .feed-container {
-  flex: 1;
-  max-width: 42rem;
-  background-color: white;
-  margin: 1rem 0 1rem 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    flex: 1;
+    max-width: 42rem;
+    background-color: white;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-/* Feed Header */
 .feed-header {
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
 }
 
 .feed-tab {
-  flex: 1;
-  padding: 1rem;
-  text-align: center;
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
+    flex: 1;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
 }
 
 .feed-tab.active {
-  color: #9333ea;
-  border-bottom-color: #9333ea;
+    color: #9333ea;
+    border-bottom-color: #9333ea;
 }
 
 .feed-tab:not(.active) {
-  color: #6b7280;
+    color: #6b7280;
 }
 
 .feed-tab:not(.active):hover {
-  color: #374151;
+    color: #374151;
 }
 
-/* Post Composer */
 .post-composer {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .composer-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
 .composer-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
 }
 
 .composer-content {
-  flex: 1;
+    flex: 1;
 }
 
 .composer-textarea {
-  width: 100%;
-  resize: none;
-  border: none;
-  outline: none;
-  color: #374151;
-  font-family: inherit;
-  font-size: 1rem;
-  line-height: 1.5;
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    color: #374151;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .composer-textarea::placeholder {
-  color: #9ca3af;
+    color: #9ca3af;
 }
 
 .composer-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.75rem;
 }
 
 .composer-tools {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    align-items: center; 
+    gap: 0.75rem;
 }
 
 .composer-tool {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #9ca3af;
-  cursor: pointer;
-  transition: color 0.2s;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; 
+    margin: 0;
 }
 
 .composer-tool:hover {
-  color: #6b7280;
+    color: #6b7280;
 }
 
 .composer-post-btn {
-  background-color: #9333ea;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
+    background-color: #9333ea;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .composer-post-btn:hover {
-  background-color: #7c3aed;
+    background-color: #7c3aed;
 }
 
-/* Posts Feed */
 .posts-feed {
-  border-top: 1px solid #e5e7eb;
+    border-top: 1px solid #e5e7eb;
 }
 
 .post {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .post:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .post-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
 .post-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
 }
 
 .post-content {
-  flex: 1;
+    flex: 1;
 }
 
 .post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
 }
 
 .post-user-info h4 {
-  font-weight: 500;
-  color: #111827;
-  margin: 0;
+    font-weight: 500;
+    color: #111827;
+    margin: 0;
 }
 
 .post-user-info p {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
 }
 
 .post-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .post-timestamp {
-  font-size: 0.875rem;
-  color: #9ca3af;
+    font-size: 0.875rem;
+    color: #9ca3af;
 }
 
 .post-menu {
-  padding: 0.25rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s;
+    padding: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
 }
 
 .post-menu:hover {
-  background-color: #f3f4f6;
+    background-color: #f3f4f6;
 }
 
 .post-text {
-  color: #374151;
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
 }
 
 .post-hashtags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-bottom: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
 }
 
 .post-hashtag {
-  color: #9333ea;
-  cursor: pointer;
-  transition: text-decoration 0.2s;
+    color: #9333ea;
+    cursor: pointer;
+    transition: text-decoration 0.2s;
 }
 
 .post-hashtag:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .post-image {
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
 }
 
 .post-image img {
-  width: 100%;
-  height: 16rem;
-  object-fit: cover;
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
 }
 
 .post-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: #6b7280;
 }
 
 .post-action {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-  font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 0.875rem;
 }
 
 .post-action:hover.like-btn {
-  color: #ef4444;
+    color: #ef4444;
 }
 
 .post-action:hover.comment-btn {
-  color: #3b82f6;
+    color: #3b82f6;
 }
 
 .post-action:hover.share-btn {
-  color: #10b981;
+    color: #10b981;
 }
 
 .post-action-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .post-bookmark {
-  margin-left: auto;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
 .post-bookmark:hover {
-  color: #9333ea;
+    color: #9333ea;
 }
 
-/* Right Profile Panel */
 .profile-panel {
-  width: 320px;
-  padding: 0;
-  margin: 1rem 0 1rem 0;
+    width: 320px;
+    padding: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-left: 1px solid #e5e7eb;
 }
 
 .profile-card {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+    background-color: transparent;
+    padding: 0;
 }
 
 .profile-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 .profile-avatar-container {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1rem;
 }
 
 .profile-avatar {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
 }
 
 .profile-status {
-  position: absolute;
-  bottom: 0.25rem;
-  right: 0.25rem;
-  width: 1rem;
-  height: 1rem;
-  background-color: #10b981;
-  border-radius: 50%;
-  border: 2px solid white;
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    background-color: #10b981;
+    border-radius: 50%;
+    border: 2px solid white;
 }
 
 .profile-name {
-  font-weight: bold;
-  font-size: 1.25rem;
-  color: #111827;
-  margin-bottom: 0.25rem;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #111827;
+    margin-bottom: 0.25rem;
 }
 
 .profile-username {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
 }
 
 .profile-location {
-  color: #9ca3af;
-  font-size: 0.875rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
 }
 
 .profile-stats {
-  display: flex;
-  justify-content: space-between;
-  text-align: center;
-  margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 .profile-stat h3 {
-  font-weight: bold;
-  font-size: 1.125rem;
-  color: #111827;
-  margin: 0 0 0.25rem 0;
+    font-weight: bold;
+    font-size: 1.125rem;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
 }
 
 .profile-stat p {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
 }
 
 .profile-about {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .profile-section-title {
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
 }
 
 .profile-bio {
-  color: #6b7280;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  margin-bottom: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
 }
 
 .profile-read-more {
-  color: #9333ea;
-  font-size: 0.875rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: text-decoration 0.2s;
+    color: #9333ea;
+    font-size: 0.875rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: text-decoration 0.2s;
 }
 
 .profile-read-more:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .profile-highlights {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .highlights-container {
-  display: flex;
-  gap: 0.75rem;
+    display: flex;
+    gap: 0.75rem;
 }
 
 .highlight-item {
-  text-align: center;
+    text-align: center;
 }
 
 .highlight-image {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.25rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.25rem;
 }
 
 .highlight-name {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.profile-contact {
-  /* Contact section styles */
+    font-size: 0.75rem;
+    color: #6b7280;
 }
 
 .contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .contact-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .contact-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .contact-icon {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
 }
 
 .contact-icon.phone {
-  background-color: #dbeafe;
+    background-color: #dbeafe;
 }
 
 .contact-icon.email {
-  background-color: #f3e8ff;
+    background-color: #f3e8ff;
 }
 
 .contact-icon.website {
-  background-color: #d1fae5;
+    background-color: #d1fae5;
 }
 
 .contact-details h4 {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #111827;
-  margin: 0 0 0.25rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
 }
 
 .contact-details p {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
 }
 
 .contact-arrow {
-  color: #9ca3af;
-  font-size: 0.875rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .profile-panel {
-    display: none;
-  }
+    .profile-panel {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
-  .slothui-container {
-    flex-direction: column;
-  }
-  
-  .sidebar {
+    .slothui-container {
+        flex-direction: column;
+    }
+    
+    
+    .main-content {
+        flex-direction: column;
+    }
+    
+}
+.post-action:hover {
+    color: #2563eb; /* xanh dương */
+    transition: 0.2s;
+}
+.like-btn.liked {
+    color: #ef4444; /* đỏ khi đã like */
+}
+
+
+/* ======================================================== */
+/* 2. QUẢN LÝ ẢNH POST (Grid & Fix Co/Giãn) */
+/* ======================================================== */
+
+/* Vùng chứa chính cho lưới ảnh trong Bài đăng (Post Feed) */
+.post-images-grid {
+    display: grid;
+    gap: 8px; /* Khoảng cách giữa các ảnh */
+    margin: 15px 0;
+    border-radius: 12px; 
+    overflow: hidden;
+    /* Thiết lập cột mặc định: Tự động chia thành các cột bằng nhau */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+/* Tùy chỉnh đặc biệt cho trường hợp 1 ảnh: Full width */
+.post-images-grid[data-count="1"] {
+    grid-template-columns: 1fr;
+}
+
+/* Tùy chỉnh đặc biệt cho trường hợp 2 ảnh: Chia làm 2 cột bằng nhau */
+.post-images-grid[data-count="2"] {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* Tùy chỉnh đặc biệt cho trường hợp 3 ảnh: Chia làm 3 cột bằng nhau */
+.post-images-grid[data-count="3"] {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Tùy chỉnh đặc biệt cho trường hợp 4 ảnh: Chia làm 2x2 */
+.post-images-grid[data-count="4"] {
+    /* Chia làm 2 cột, mỗi cột 1fr. 4 ảnh sẽ tự động xếp 2 hàng */
+    grid-template-columns: 1fr 1fr; 
+}
+
+
+/* Khung chứa từng ảnh để kiểm soát tỷ lệ */
+.post-images-grid .post-image-item {
+    position: relative;
+    width: 100%;
+    /* ⭐️ Quan trọng: TẠO TỶ LỆ KHUNG 1:1 cho grid nhiều ảnh */
+    padding-top: 100%; 
+    overflow: hidden;
+    background-color: #f3f4f6; 
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+/* Special case: single image with flexible height */
+.post-images-grid[data-count="1"] .post-image-item {
+    padding-top: 0;
+    height: auto;
+    max-height: 500px;
+}
+
+.post-images-grid .post-image-item:hover {
+    transform: scale(0.98);
+}
+
+/* Dark mode for post image items */
+.slothui-container.dark .post-images-grid .post-image-item {
+    background-color: #1e293b;
+}
+
+/* Ảnh bên trong khung */
+.post-images-grid .post-image-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* ⭐️ QUAN TRỌNG: COVER để ảnh lấp đầy khung 1:1 và bị cắt nếu cần */
+    object-fit: cover; 
+    display: block;
+}
+
+/* Special case: single image maintains aspect ratio */
+.post-images-grid[data-count="1"] .post-image-item img {
+    position: static;
     width: 100%;
     height: auto;
-  }
-  
-  .main-content {
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* Style cho Overlay (+N) khi có nhiều hơn 4 ảnh */
+.post-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.post-image-overlay:hover {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(6px);
+    transform: scale(1.02);
+}
+
+/* Dark mode cho overlay */
+.slothui-container.dark .post-image-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.slothui-container.dark .post-image-overlay:hover {
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(6px);
+}
+
+
+/* Preview Ảnh trong Post Composer (Modal) */
+/* ⭐️ THAY THẾ CSS CŨ ĐỂ KHẮC PHỤC LỖI CO ẢNH */
+.modal-images-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 15px 20px;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #f9fafb;
+    max-height: 200px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Thêm scroll khi quá nhiều ảnh */
+}
+
+/* Dark mode for modal image preview grid */
+.slothui-container.dark .modal-images-preview-grid {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+.modal-image-preview-item {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 aspect ratio */
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f3f4f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode for preview items */
+.slothui-container.dark .modal-image-preview-item {
+    background-color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.modal-image-preview-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Fill the square */
+    display: block;
+}
+
+/* Nút xóa ảnh trong Modal Preview */
+.modal-remove-image-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.modal-remove-image-btn:hover {
+    background-color: rgba(239, 68, 68, 0.9);
+    transform: scale(1.1);
+}
+
+.modal-remove-image-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* Ảnh trong Posts Feed (Dành cho post chỉ có 1 ảnh - legacy support) */
+.post-image {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f3f4f6;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.post-image:hover {
+    transform: scale(0.99);
+}
+
+/* Dark mode for single post image */
+.slothui-container.dark .post-image {
+    background-color: #1e293b;
+}
+
+.post-image img {
+    max-width: 100%; 
+    height: auto; /* ⭐️ Chiều cao tự động để giữ tỷ lệ */
+    max-height: 500px; /* Giới hạn chiều cao */
+    width: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* ======================================================== */
+/* 3. AVATAR EDIT (Style cho tính năng mới) */
+/* ======================================================== */
+
+/* Đảm bảo khung avatar có position: relative để nút edit ở góc */
+.profile-avatar-container {
+    position: relative; 
+    display: inline-block; /* Quan trọng để chỉ chiếm đủ không gian */
+}
+
+/* Nút Chỉnh Sửa Avatar */
+.edit-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--color-primary, #6246ea); /* Sử dụng màu chính */
+    color: white;
+    border: 2px solid var(--color-background-panel, #f0f0f0);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 10;
+}
+
+.edit-avatar-btn:hover {
+    background: var(--color-primary-dark, #533ab7);
+}
+
+/* Modal Overlay */
+.avatar-edit-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.804);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Box */
+.avatar-edit-modal {
+    background: var(--color-background-panel);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    color: var(--color-text-primary);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+/* Action Buttons */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.modal-upload-btn, .modal-cancel-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+    flex: 1;
+    text-align: center; 
+}
+
+.modal-upload-btn {
+    background: var(--color-primary, #6246ea);
+    color: white;
+    border: none;
+    display: block; 
+    text-decoration: none;
+}
+
+.modal-upload-btn:hover {
+    background: var(--color-primary-dark, #533ab7);
+}
+
+.modal-cancel-btn {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+}
+
+.modal-cancel-btn:hover {
+    background: var(--color-border);
+}
+
+
+.container {
+    max-width: 600px;
+    width: 100%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ==================================== */
+/* ⭐️ 4. POP-UP ĐĂNG BÀI (CREATE POST MODAL) - CẬP NHẬT FONT VÀ NỀN */
+/* ==================================== */
+
+/* Lớp phủ (Overlay) */
+.create-post-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đảm bảo modal nằm trên tất cả */
+    backdrop-filter: blur(5px);
+}
+
+/* Hộp Pop-up chính */
+.create-post-modal {
+    /* ⭐️ ĐÃ CẬP NHẬT: Màu nền mới (tím nhạt) */
+    background-color: var(--color-modal-background, #f0f3ff); 
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
     flex-direction: column;
-  }
-  
-  .feed-container {
-    margin: 0.5rem;
-  }
+}
+
+/* Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--color-border); /* Đường kẻ mỏng */
+}
+
+.modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    flex-grow: 1;
+    text-align: center;
+    margin-right: -25px; /* Để bù lại nút đóng bên phải */
+    letter-spacing: -0.01em;
+}
+
+.modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background-color: #e5e7eb;
+    color: #374151;
+    transform: scale(1.05);
+}
+
+/* Dark mode for close button */
+.slothui-container.dark .modal-close-btn {
+    background: #1e293b;
+    color: #94a3b8;
+}
+
+.slothui-container.dark .modal-close-btn:hover {
+    background-color: #334155;
+    color: #cbd5e1;
+}
+
+/* User Info */
+.modal-user-info {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px 10px;
+}
+
+.modal-user-info .modal-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.modal-user-info .user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-user-info .modal-user-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+}
+
+.privacy-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--color-background-tertiary);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Textarea */
+.modal-textarea {
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background-color: transparent;
+    min-height: 150px; /* Chiều cao tối thiểu */
+    max-height: 400px; /* Chiều cao tối đa */
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+/* ⭐️ ĐÃ CẬP NHẬT: Định dạng chữ placeholder trong Pop-up (Đồng bộ font) */
+.modal-textarea::placeholder {
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 400; 
+    color: #a0a0a0; 
+    line-height: 1.6; 
+}
+
+/* Image Preview */
+.modal-image-preview-container {
+    position: relative;
+    margin: 10px 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.modal-image-preview {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Action Bar (Thanh công cụ) */
+.modal-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px 15px;
+    padding: 10px 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.action-bar-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: -0.01em;
+}
+
+.action-bar-tools {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    color: #4CAF50;
+}
+
+.modal-tool-btn:hover:not(.disabled) {
+    background-color: rgba(76, 175, 80, 0.1);
+    transform: scale(1.05);
+}
+
+.modal-tool-btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.tool-icon.more { color: var(--color-text-secondary); }
+
+
+/* Post Button */
+.modal-post-btn {
+    width: calc(100% - 40px);
+    margin: 0 20px 20px;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+    
+    /* Màu tím chủ đạo */
+    background-color: var(--color-purple); 
+    color: white; /* ⭐️ CẬP NHẬT: Màu chữ trắng */
+}
+
+/* ⭐️ KHẮC PHỤC LỖI HOVER: Đổi sang màu tím đậm hơn, KHÔNG trùng màu nền */
+.modal-post-btn:not(.disabled):hover {
+    background-color: #6a0dad; 
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+
+.modal-post-btn.disabled {
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+/* ==================================== */
+/* ⭐️ 5. CẬP NHẬT COMPOSER CŨ (INPUT PLACEHOLDER) - ĐỒNG BỘ FONT */
+/* ==================================== */
+
+.post-composer {
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    cursor: pointer; /* Thêm con trỏ để gợi ý click */
+    background-color: var(--color-background-secondary); /* Thêm màu nền cho composer nhanh */
+}
+
+.composer-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Thay thế textarea cũ bằng placeholder */
+.composer-input-placeholder {
+    flex-grow: 1;
+    padding: 10px 15px;
+    background-color: var(--color-background-tertiary);
+    border-radius: 20px;
+    
+    /* ⭐️ ĐÃ CẬP NHẬT: Đồng bộ font với placeholder trong Modal */
+    font-family: inherit;
+    font-size: 1.1rem; /* Kích thước nhỏ hơn Modal, nhưng vẫn to hơn input thường */
+    font-weight: 500; 
+    color: #a0a0a0;
+    
+    /* Ngăn người dùng gõ trực tiếp */
+    pointer-events: none; 
+}
+
+.composer-post-btn {
+    /* Giữ nguyên phong cách nút Post */
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+/* Ẩn các actions cũ của composer nhỏ */
+.composer-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.composer-content .composer-textarea,
+.composer-content .composer-actions,
+.image-preview-container {
+    display: none;
+}
+/* ======================================================== */
+/* 6. XEM THÊM ẢNH (IMAGE GALLERY / LIGHTBOX MODAL) */
+/* ======================================================== */
+
+/* Lớp phủ (Overlay) */
+.image-gallery-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Nền đen mờ hơn một chút so với modal đăng bài */
+    background-color: rgba(0, 0, 0, 0.9); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500; /* Đảm bảo nằm trên tất cả các modal khác */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.image-gallery-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Container chính (Modal) */
+.image-gallery-modal {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: 90%;
+    max-width: 1400px;
+    max-height: 800px;
+    background-color: transparent; /* Nền trong suốt để chỉ thấy ảnh */
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease-out;
+}
+
+.image-gallery-modal-overlay.visible .image-gallery-modal {
+    transform: scale(1);
+}
+
+/* Nút Đóng */
+.gallery-close-btn {
+    position: absolute;
+    top: 20px; /* Đặt trong container, cách lề trên 20px */
+    right: 20px; /* Cách lề phải 20px */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1501;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.gallery-close-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Vùng hiển thị ảnh (Slide) */
+.gallery-main-viewer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* Nền đen cho khu vực hiển thị ảnh lớn */
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.gallery-main-image-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gallery-main-image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ảnh giữ tỷ lệ và vừa vặn khung */
+    transition: opacity 0.3s;
+}
+
+/* Nút điều hướng (Previous/Next) */
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.gallery-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-nav-btn.prev {
+    left: 20px;
+}
+
+.gallery-nav-btn.next {
+    right: 20px;
+}
+
+/* Vùng hiển thị các ảnh thumbnail (Gallery) */
+.gallery-thumbnails {
+    max-height: 120px;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 0;
+    gap: 10px;
+    justify-content: center; /* Căn giữa các ảnh nhỏ nếu ít ảnh */
+    background-color: #111; /* Nền tối cho thanh thumbnail */
+    border-radius: 0 0 8px 8px;
+}
+
+/* Ẩn thanh cuộn mặc định của thumbnail */
+.gallery-thumbnails::-webkit-scrollbar {
+    height: 4px;
+}
+.gallery-thumbnails::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 2px;
+}
+.gallery-thumbnails::-webkit-scrollbar-track {
+    background: #222;
+}
+
+
+.gallery-thumbnail-item {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0; /* Không cho thumbnail bị co lại */
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s, border 0.2s;
+    border: 3px solid transparent;
+}
+
+.gallery-thumbnail-item.active {
+    opacity: 1;
+    border-color: #fff; /* Border trắng sáng khi đang được chọn */
+}
+
+.gallery-thumbnail-item:hover {
+    opacity: 0.8;
+}
+
+.gallery-thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ảnh nhỏ sẽ cover hết khung 1:1 */
+}
+
+/* Dark Mode Overrides (Nếu cần) */
+.slothui-container.dark .gallery-thumbnails {
+    background-color: #0b1220;
+}
+/* ==================================== */
+/* 3. Image Viewer Modal Styles (REDESIGNED) */
+/* ==================================== */
+
+.image-viewer-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.96); /* Nền tối hơn cho focus vào ảnh */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.image-viewer-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1600px;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+}
+
+/* Close Button - Modern Design */
+.viewer-close-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    z-index: 1010;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.viewer-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Main Image Container */
+.viewer-main-image {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.viewer-main-image img {
+    max-width: 100%;
+    max-height: calc(100vh - 180px); /* Leave space for caption and controls */
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    animation: imageZoomIn 0.4s ease-out;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes imageZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Navigation Buttons - Modern Design */
+.viewer-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    z-index: 1005;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.viewer-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.viewer-nav-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.viewer-nav-btn.prev {
+    left: 30px;
+}
+
+.viewer-nav-btn.next {
+    right: 30px;
+}
+
+.viewer-nav-btn svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* Image Counter/Caption - Modern Design */
+.viewer-caption {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1005;
+    letter-spacing: 0.5px;
+}
+
+/* Keyboard hints (optional - can be shown on first load) */
+.viewer-keyboard-hint {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 12px;
+    z-index: 1005;
+    display: none; /* Hidden by default */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .image-viewer-modal-content {
+        padding: 40px 20px;
+    }
+    
+    .viewer-nav-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .viewer-nav-btn.prev {
+        left: 15px;
+    }
+    
+    .viewer-nav-btn.next {
+        right: 15px;
+    }
+    
+    .viewer-close-btn {
+        top: 15px;
+        right: 15px;
+        width: 42px;
+        height: 42px;
+    }
+    
+    .viewer-main-image img {
+        max-height: calc(100vh - 140px);
+    }
 }

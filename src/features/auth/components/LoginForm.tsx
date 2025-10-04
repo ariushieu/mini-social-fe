@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { ChangeEvent, FormEvent, MouseEvent } from "react";
+import { useAuth } from "../AuthProvider";
 import "../../../styles/auth/LoginForm.css";
 import { login } from "../../../api/auth";
 import type { LoginRequest } from "../../../types/auth/AuthLogin";
@@ -24,6 +25,7 @@ const LoginForm: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
+  const auth = useAuth();
 
   const validateEmail = (value: string): string => {
     if (!value.trim()) return "Email không được để trống";
@@ -88,8 +90,16 @@ const LoginForm: React.FC = () => {
       const response = await login(payload);
       console.log("Login response:", response);
 
-      toast.success("Đăng nhập thành công");
-      window.location.href = "/";
+      // The API returns { accessToken, refreshToken, user: {...} }
+      const token = response.accessToken;
+      const user = response.user;
+
+      if (token && user) {
+        auth.login({ token, user });
+        toast.success("Đăng nhập thành công");
+      } else {
+        toast.error("Không nhận được token từ server");
+      }
     } catch (error: any) {
       console.error("Login error:", error);
 
