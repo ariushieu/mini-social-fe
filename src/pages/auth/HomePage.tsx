@@ -27,6 +27,7 @@ import { toast } from "react-toastify";
 import "../../styles/page/HomePage.css";
 import { createPost } from "../../api/posts";
 import { useAuth } from "../../features/auth/AuthProvider";
+import Loading from "../../components/Loading";
 
 // Type definitions (Giữ nguyên)
 interface User {
@@ -420,7 +421,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
         <textarea
           value={postText}
           onChange={(e) => setPostText(e.target.value)}
-          placeholder={`Bạn đang nghĩ gì, ${user.displayName}?`}
+          placeholder={`${user.displayName} ơi, bạn muốn chia sẻ điều gì?`}
           className="modal-textarea"
           rows={6}
           disabled={isSubmitting}
@@ -580,20 +581,9 @@ const SlothuiInterface = () => {
     return () => clearTimeout(timer);
   }, [auth.user]); // Re-run when auth.user changes
 
-  // Effect to update body class for dark mode and save to localStorage
+  // Persist dark mode setting (scoped to component container via className)
   useEffect(() => {
-    // Save to localStorage
     localStorage.setItem("isDarkMode", isDark.toString());
-
-    // Apply to body
-    if (isDark) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-    return () => {
-      document.body.classList.remove("dark-mode");
-    };
   }, [isDark]);
 
   const handleLike = (postId: number) => {
@@ -684,390 +674,395 @@ const SlothuiInterface = () => {
 
   if (!user) {
     return (
-      <div className="loading-container">
-        <div className="loading-text">Loading...</div>
-      </div>
+      <Loading type="pulse" fullscreen text="Đang khởi tạo trang chủ..." />
     );
   }
 
   return (
-    <div className={`slothui-container ${isDark ? "dark" : ""}`}>
-      {/* Sidebar (Giữ nguyên) */}
-      <div className="sidebar">
-        {/* ... (Logo, Search, Navigation, User Profile Bottom giữ nguyên) ... */}
-        <div className="sidebar-logo">
-          <div className="logo-container">
-            <div className="logo-icon">
-              <img className="picture-logo" src="/public/images/logo.jpg" />
-            </div>
-            <span className="logo-title">iSocial</span>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="search-container">
-          <div className="search-wrapper">
-            <Search className="search-icon" />
-            <input
-              type="text"
-              placeholder="Tìm Kiếm..."
-              className="search-input"
-            />
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="nav-container">
-          <div className="nav-list">
-            <div className="nav-item active">
-              <div className="nav-item-content">
-                <Home className="nav-icon" />
-                <span className="nav-text">Home</span>
+    <div className={`home-page ${isDark ? "dark-mode" : ""}`}>
+      <div className={`slothui-container ${isDark ? "dark" : ""}`}>
+        {/* Sidebar (Giữ nguyên) */}
+        <div className="sidebar">
+          {/* ... (Logo, Search, Navigation, User Profile Bottom giữ nguyên) ... */}
+          <div className="sidebar-logo">
+            <div className="logo-container">
+              <div className="logo-icon">
+                <img className="picture-logo" src="/public/images/logo.jpg" />
               </div>
-              <span className="nav-badge active">10</span>
+              <span className="logo-title">iSocial</span>
             </div>
+          </div>
 
-            {/* <div className="nav-item">
+          {/* Search */}
+          <div className="search-container">
+            <div className="search-wrapper">
+              <Search className="search-icon" />
+              <input
+                type="text"
+                placeholder="Tìm Kiếm..."
+                className="search-input"
+              />
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="nav-container">
+            <div className="nav-list">
+              <div className="nav-item active">
+                <div className="nav-item-content">
+                  <Home className="nav-icon" />
+                  <span className="nav-text">Home</span>
+                </div>
+                <span className="nav-badge active">10</span>
+              </div>
+
+              {/* <div className="nav-item">
               <div className="nav-item-content">
                 <CheckSquare className="nav-icon" />
                 <span className="nav-text">Tasks</span>
               </div>
             </div> */}
 
-            <div className="nav-item">
-              <div className="nav-item-content">
-                <Users className="nav-icon" />
-                <span className="nav-text">Users</span>
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <Users className="nav-icon" />
+                  <span className="nav-text">Users</span>
+                </div>
+                <span className="nav-badge">2</span>
               </div>
-              <span className="nav-badge">2</span>
-            </div>
 
-            {/* <div className="nav-item">
+              {/* <div className="nav-item">
               <div className="nav-item-content">
                 <Wifi className="nav-icon" />
                 <span className="nav-text">APIs</span>
               </div>
             </div> */}
 
-            {/* <div className="nav-item">
+              {/* <div className="nav-item">
               <div className="nav-item-content">
                 <div className="nav-icon border-2 border-current rounded"></div>
                 <span className="nav-text">Subscription</span>
               </div>
             </div> */}
 
-            <div className="nav-item">
-              <div className="nav-item-content">
-                <Settings className="nav-icon" />
-                <span className="nav-text">Settings</span>
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <Settings className="nav-icon" />
+                  <span className="nav-text">Settings</span>
+                </div>
+                <button
+                  onClick={() => setIsDark((prev) => !prev)}
+                  className="nav-dark-toggle"
+                  aria-label="Toggle dark mode"
+                >
+                  {isDark ? (
+                    <Sun className="w-4 h-4" />
+                  ) : (
+                    <Moon className="w-4 h-4" />
+                  )}
+                </button>
               </div>
-              <button
-                onClick={() => setIsDark((prev) => !prev)}
-                className="nav-dark-toggle"
-                aria-label="Toggle dark mode"
+
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <HelpCircle className="nav-icon" />
+                  <span className="nav-text">Help & Support</span>
+                </div>
+              </div>
+
+              <div
+                className="nav-item"
+                onClick={auth.logout}
+                style={{ cursor: "pointer" }}
               >
-                {isDark ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
+                <div className="nav-item-content">
+                  <LogOut className="nav-icon" />
+                  <span className="nav-text">Đăng xuất</span>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* User Profile at bottom */}
+          <div className="user-profile-bottom">
+            <div className="user-profile-info">
+              <img src={user.avatar} alt="User" className="user-avatar-small" />
+              <div className="flex-1">
+                <div className="user-name">{user.displayName}</div>
+                <div className="user-role">Basic Member</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="main-content">
+          {/* Feed */}
+          <div className="feed-container">
+            {/* Header */}
+            <div className="feed-header">
+              <button
+                onClick={() => setActiveTab("For You")}
+                className={`feed-tab ${
+                  activeTab === "For You" ? "active" : ""
+                }`}
+              >
+                For You
+              </button>
+              <button
+                onClick={() => setActiveTab("Following")}
+                className={`feed-tab ${
+                  activeTab === "Following" ? "active" : ""
+                }`}
+              >
+                Following
               </button>
             </div>
 
-            <div className="nav-item">
-              <div className="nav-item-content">
-                <HelpCircle className="nav-icon" />
-                <span className="nav-text">Help & Support</span>
+            {/* Post Composer - Nút mở Pop-up */}
+            <div className="post-composer" onClick={handleOpenPostModal}>
+              <div className="composer-container">
+                <img
+                  src={user.avatar}
+                  alt="Your avatar"
+                  className="composer-avatar"
+                />
+                <div className="composer-input-placeholder">
+                  Hãy chia sẻ điều gì đó thú vị...
+                </div>
               </div>
             </div>
 
-            <div
-              className="nav-item"
-              onClick={auth.logout}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="nav-item-content">
-                <LogOut className="nav-icon" />
-                <span className="nav-text">Đăng xuất</span>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        {/* User Profile at bottom */}
-        <div className="user-profile-bottom">
-          <div className="user-profile-info">
-            <img src={user.avatar} alt="User" className="user-avatar-small" />
-            <div className="flex-1">
-              <div className="user-name">{user.displayName}</div>
-              <div className="user-role">Basic Member</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="main-content">
-        {/* Feed */}
-        <div className="feed-container">
-          {/* Header */}
-          <div className="feed-header">
-            <button
-              onClick={() => setActiveTab("For You")}
-              className={`feed-tab ${activeTab === "For You" ? "active" : ""}`}
-            >
-              For You
-            </button>
-            <button
-              onClick={() => setActiveTab("Following")}
-              className={`feed-tab ${
-                activeTab === "Following" ? "active" : ""
-              }`}
-            >
-              Following
-            </button>
-          </div>
-
-          {/* Post Composer - Nút mở Pop-up */}
-          <div className="post-composer" onClick={handleOpenPostModal}>
-            <div className="composer-container">
-              <img
-                src={user.avatar}
-                alt="Your avatar"
-                className="composer-avatar"
-              />
-              <div className="composer-input-placeholder">
-                Bạn đang nghĩ gì?
-              </div>
-              <button className="composer-post-btn active">Post →</button>
-            </div>
-          </div>
-
-          {/* Posts Feed (CẬP NHẬT: gắn onClick để mở ImageViewerModal) */}
-          <div className="posts-feed">
-            {posts.map((post) => (
-              <div key={post.id} className="post">
-                <div className="post-container">
-                  <img
-                    src={post.user.avatar}
-                    alt={post.user.name}
-                    className="post-avatar"
-                    onClick={() => navigate(`/profile/${post.user.id}`)}
-                    style={{ cursor: "pointer" }}
-                  />
-                  <div className="post-content">
-                    <div className="post-header">
-                      <div
-                        className="post-user-info"
-                        onClick={() => navigate(`/profile/${post.user.id}`)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <h4>{post.user.name}</h4>
-                        <p>{post.user.role}</p>
+            {/* Posts Feed (CẬP NHẬT: gắn onClick để mở ImageViewerModal) */}
+            <div className="posts-feed">
+              {posts.map((post) => (
+                <div key={post.id} className="post">
+                  <div className="post-container">
+                    <img
+                      src={post.user.avatar}
+                      alt={post.user.name}
+                      className="post-avatar"
+                      onClick={() => navigate(`/profile/${post.user.id}`)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <div className="post-content">
+                      <div className="post-header">
+                        <div
+                          className="post-user-info"
+                          onClick={() => navigate(`/profile/${post.user.id}`)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <h4>{post.user.name}</h4>
+                          <p>{post.user.role}</p>
+                        </div>
+                        <div className="post-meta">
+                          <span className="post-timestamp">
+                            {post.timestamp}
+                          </span>
+                          <button className="post-menu">
+                            <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="post-meta">
-                        <span className="post-timestamp">{post.timestamp}</span>
-                        <button className="post-menu">
-                          <MoreHorizontal className="w-4 h-4 text-gray-400" />
+
+                      <div className="post-body">
+                        <p className="post-text">{post.content}</p>
+                        {post.hashtags.length > 0 && (
+                          <div className="post-hashtags">
+                            {post.hashtags.map((tag, index) => (
+                              <span key={index} className="post-hashtag">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* ⭐️ CẬP NHẬT: Logic hiển thị nhiều ảnh theo Grid (THÊM onClick) */}
+                        {post.images &&
+                          post.images.length > 0 &&
+                          (post.images.length > 1 ? (
+                            <div
+                              className="post-images-grid"
+                              data-count={Math.min(post.images.length, 4)}
+                            >
+                              {post.images
+                                .slice(0, 4)
+                                .map((imageSrc, index) => (
+                                  <div
+                                    key={index}
+                                    className="post-image-item"
+                                    // ⭐️ THÊM: Gắn sự kiện onClick vào đây
+                                    onClick={() =>
+                                      handleViewImage(post.images!, index)
+                                    }
+                                  >
+                                    <img
+                                      src={imageSrc}
+                                      alt={`Post content ${index + 1}`}
+                                    />
+                                    {/* Overlay cho ảnh thứ 4 nếu có nhiều hơn 4 ảnh */}
+                                    {post.images!.length > 4 && index === 3 && (
+                                      <div className="post-image-overlay">
+                                        + {post.images!.length - 4}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                            </div>
+                          ) : (
+                            /* Nếu chỉ có 1 ảnh, gắn sự kiện onClick */
+                            <div
+                              className="post-image"
+                              onClick={() => handleViewImage(post.images!, 0)}
+                            >
+                              <img src={post.images[0]} alt="Post content" />
+                            </div>
+                          ))}
+                      </div>
+
+                      <div className="post-actions">
+                        <button
+                          onClick={() => handleLike(post.id)}
+                          className="post-action like-btn"
+                        >
+                          <Heart className="post-action-icon" />
+                          <span>{post.stats.likes} Likes</span>
+                        </button>
+
+                        <button className="post-action comment-btn">
+                          <MessageCircle className="post-action-icon" />
+                          <span>{post.stats.comments} Comments</span>
+                        </button>
+
+                        <button className="post-action share-btn">
+                          <Share className="post-action-icon" />
+                          <span>{post.stats.shares} Share</span>
+                        </button>
+
+                        <button className="post-bookmark">
+                          <Bookmark className="post-action-icon" />
                         </button>
                       </div>
                     </div>
-
-                    <div className="post-body">
-                      <p className="post-text">{post.content}</p>
-                      {post.hashtags.length > 0 && (
-                        <div className="post-hashtags">
-                          {post.hashtags.map((tag, index) => (
-                            <span key={index} className="post-hashtag">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* ⭐️ CẬP NHẬT: Logic hiển thị nhiều ảnh theo Grid (THÊM onClick) */}
-                      {post.images &&
-                        post.images.length > 0 &&
-                        (post.images.length > 1 ? (
-                          <div
-                            className="post-images-grid"
-                            data-count={Math.min(post.images.length, 4)}
-                          >
-                            {post.images.slice(0, 4).map((imageSrc, index) => (
-                              <div
-                                key={index}
-                                className="post-image-item"
-                                // ⭐️ THÊM: Gắn sự kiện onClick vào đây
-                                onClick={() =>
-                                  handleViewImage(post.images!, index)
-                                }
-                              >
-                                <img
-                                  src={imageSrc}
-                                  alt={`Post content ${index + 1}`}
-                                />
-                                {/* Overlay cho ảnh thứ 4 nếu có nhiều hơn 4 ảnh */}
-                                {post.images!.length > 4 && index === 3 && (
-                                  <div className="post-image-overlay">
-                                    + {post.images!.length - 4}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          /* Nếu chỉ có 1 ảnh, gắn sự kiện onClick */
-                          <div
-                            className="post-image"
-                            onClick={() => handleViewImage(post.images!, 0)}
-                          >
-                            <img src={post.images[0]} alt="Post content" />
-                          </div>
-                        ))}
-                    </div>
-
-                    <div className="post-actions">
-                      <button
-                        onClick={() => handleLike(post.id)}
-                        className="post-action like-btn"
-                      >
-                        <Heart className="post-action-icon" />
-                        <span>{post.stats.likes} Likes</span>
-                      </button>
-
-                      <button className="post-action comment-btn">
-                        <MessageCircle className="post-action-icon" />
-                        <span>{post.stats.comments} Comments</span>
-                      </button>
-
-                      <button className="post-action share-btn">
-                        <Share className="post-action-icon" />
-                        <span>{post.stats.shares} Share</span>
-                      </button>
-
-                      <button className="post-bookmark">
-                        <Bookmark className="post-action-icon" />
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Right Profile Panel (Giữ nguyên) */}
-        <div className="profile-panel">
-          <div className="profile-card">
-            {/* Profile Header */}
-            <div className="profile-header">
-              <div className="profile-avatar-container">
-                <img
-                  src={user.avatar}
-                  alt={user.displayName}
-                  className="profile-avatar"
-                />
-                {/* Nút chỉnh sửa avatar */}
-                <button
-                  onClick={() => setIsEditingAvatar(true)}
-                  className="edit-avatar-btn"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
-                <div className="profile-status"></div>
-              </div>
-              <h2 className="profile-name">{user.displayName}</h2>
-              <p className="profile-username">{user.username}</p>
-              <p className="profile-location">{user.location} ✈️</p>
-            </div>
-
-            {/* Stats */}
-            <div className="profile-stats">
-              <div className="profile-stat">
-                <h3>{user.stats.posts}</h3>
-                <p>Posts</p>
-              </div>
-              <div className="profile-stat">
-                <h3>{user.stats.followers}</h3>
-                <p>Followers</p>
-              </div>
-              <div className="profile-stat">
-                <h3>{user.stats.following}</h3>
-                <p>Following</p>
-              </div>
-            </div>
-
-            {/* About */}
-            <div className="profile-about">
-              <h3 className="profile-section-title">Giới Thiệu</h3>
-              <p className="profile-bio">{user.bio}</p>
-              <button className="profile-read-more">Xem Thêm</button>
-            </div>
-
-            {/* Story Highlights */}
-            <div className="profile-highlights">
-              <h3 className="profile-section-title">Tin Nổi Bật</h3>
-              <div className="highlights-container">
-                {user.storyHighlights.map((story) => (
-                  <div key={story.id} className="highlight-item">
-                    <img
-                      src={story.image}
-                      alt={story.name}
-                      className="highlight-image"
-                    />
-                    <span className="highlight-name">{story.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact Info */}
-            <div className="profile-contact">
-              <h3 className="profile-section-title">Thông Tin Liên Hệ</h3>
-              <div className="contact-list">
-                <div className="contact-item">
-                  <div className="contact-info">
-                    <div className="contact-icon phone">
-                      <span role="img" aria-label="phone">
-                        📞
-                      </span>
-                    </div>
-                    <div className="contact-details">
-                      <h4>Số Điện Thoại</h4>
-                      <p>{user.contact.phone}</p>
-                    </div>
-                  </div>
-                  <span className="contact-arrow">↗</span>
+          {/* Right Profile Panel (Giữ nguyên) */}
+          <div className="profile-panel">
+            <div className="profile-card">
+              {/* Profile Header */}
+              <div className="profile-header">
+                <div className="profile-avatar-container">
+                  <img
+                    src={user.avatar}
+                    alt={user.displayName}
+                    className="profile-avatar"
+                  />
+                  {/* Nút chỉnh sửa avatar */}
+                  <button
+                    onClick={() => setIsEditingAvatar(true)}
+                    className="edit-avatar-btn"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <div className="profile-status"></div>
                 </div>
+                <h2 className="profile-name">{user.displayName}</h2>
+                <p className="profile-username">{user.username}</p>
+                <p className="profile-location">{user.location} ✈️</p>
+              </div>
 
-                <div className="contact-item">
-                  <div className="contact-info">
-                    <div className="contact-icon email">
-                      <span role="img" aria-label="email">
-                        📧
-                      </span>
-                    </div>
-                    <div className="contact-details">
-                      <h4>Email </h4>
-                      <p>{user.contact.email}</p>
-                    </div>
-                  </div>
-                  <span className="contact-arrow">↗</span>
+              {/* Stats */}
+              <div className="profile-stats">
+                <div className="profile-stat">
+                  <h3>{user.stats.posts}</h3>
+                  <p>Posts</p>
                 </div>
+                <div className="profile-stat">
+                  <h3>{user.stats.followers}</h3>
+                  <p>Followers</p>
+                </div>
+                <div className="profile-stat">
+                  <h3>{user.stats.following}</h3>
+                  <p>Following</p>
+                </div>
+              </div>
 
-                <div className="contact-item">
-                  <div className="contact-info">
-                    <div className="contact-icon website">
-                      <span role="img" aria-label="website">
-                        🌐
-                      </span>
+              {/* About */}
+              <div className="profile-about">
+                <h3 className="profile-section-title">Giới Thiệu</h3>
+                <p className="profile-bio">{user.bio}</p>
+                <button className="profile-read-more">Xem Thêm</button>
+              </div>
+
+              {/* Story Highlights */}
+              <div className="profile-highlights">
+                <h3 className="profile-section-title">Tin Nổi Bật</h3>
+                <div className="highlights-container">
+                  {user.storyHighlights.map((story) => (
+                    <div key={story.id} className="highlight-item">
+                      <img
+                        src={story.image}
+                        alt={story.name}
+                        className="highlight-image"
+                      />
+                      <span className="highlight-name">{story.name}</span>
                     </div>
-                    <div className="contact-details">
-                      <h4>Website</h4>
-                      <p>{user.contact.website}</p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div className="profile-contact">
+                <h3 className="profile-section-title">Thông Tin Liên Hệ</h3>
+                <div className="contact-list">
+                  <div className="contact-item">
+                    <div className="contact-info">
+                      <div className="contact-icon phone">
+                        <span role="img" aria-label="phone">
+                          📞
+                        </span>
+                      </div>
+                      <div className="contact-details">
+                        <h4>Số Điện Thoại</h4>
+                        <p>{user.contact.phone}</p>
+                      </div>
                     </div>
+                    <span className="contact-arrow">↗</span>
                   </div>
-                  <span className="contact-arrow">↗</span>
+
+                  <div className="contact-item">
+                    <div className="contact-info">
+                      <div className="contact-icon email">
+                        <span role="img" aria-label="email">
+                          📧
+                        </span>
+                      </div>
+                      <div className="contact-details">
+                        <h4>Email </h4>
+                        <p>{user.contact.email}</p>
+                      </div>
+                    </div>
+                    <span className="contact-arrow">↗</span>
+                  </div>
+
+                  <div className="contact-item">
+                    <div className="contact-info">
+                      <div className="contact-icon website">
+                        <span role="img" aria-label="website">
+                          🌐
+                        </span>
+                      </div>
+                      <div className="contact-details">
+                        <h4>Website</h4>
+                        <p>{user.contact.website}</p>
+                      </div>
+                    </div>
+                    <span className="contact-arrow">↗</span>
+                  </div>
                 </div>
               </div>
             </div>

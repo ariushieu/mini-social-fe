@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "../../styles/components/Profile.css";
 import { getPostsByUser } from "../../api/posts";
 import { useAuth } from "../../features/auth/AuthProvider";
+import Loading from "../../components/Loading";
 
 interface ProfileUser {
   id: string;
@@ -268,7 +269,13 @@ const Profile: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="profile-page-loading-container">Loading...</div>;
+    return (
+      <Loading
+        type="skeleton"
+        fullscreen
+        text="Đang tải thông tin người dùng..."
+      />
+    );
   }
 
   if (!user) {
