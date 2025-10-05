@@ -509,7 +509,11 @@ const SlothuiInterface = () => {
   const [activeTab, setActiveTab] = useState<string>("For You");
   const [posts, setPosts] = useState<Post[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const [isDark, setIsDark] = useState<boolean>(false);
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    // Initialize from localStorage
+    const saved = localStorage.getItem("isDarkMode");
+    return saved === "true";
+  });
 
   // State để mở/đóng Pop-up Đăng bài
   const [showCreatePostModal, setShowCreatePostModal] =
@@ -576,8 +580,12 @@ const SlothuiInterface = () => {
     return () => clearTimeout(timer);
   }, [auth.user]); // Re-run when auth.user changes
 
-  // Effect to update body class for dark mode
+  // Effect to update body class for dark mode and save to localStorage
   useEffect(() => {
+    // Save to localStorage
+    localStorage.setItem("isDarkMode", isDark.toString());
+
+    // Apply to body
     if (isDark) {
       document.body.classList.add("dark-mode");
     } else {

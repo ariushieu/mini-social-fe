@@ -24,7 +24,7 @@ body {
     line-height: 1.5;
     background: #f5f5f5;
     margin: 0;
-    /* padding: 0 1rem; */
+
     min-height: 100vh;
     transition: background-color 0.3s ease;
 }
@@ -1006,8 +1006,6 @@ body.dark-mode * {
 }
 
 
-/* Preview Ảnh trong Post Composer (Modal) */
-/* ⭐️ THAY THẾ CSS CŨ ĐỂ KHẮC PHỤC LỖI CO ẢNH */
 .modal-images-preview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -1017,11 +1015,10 @@ body.dark-mode * {
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     background-color: #f9fafb;
-    max-height: 200px; /* Giới hạn chiều cao */
-    overflow-y: auto; /* Thêm scroll khi quá nhiều ảnh */
+    max-height: 200px; 
+    overflow-y: auto; 
 }
 
-/* Dark mode for modal image preview grid */
 .slothui-container.dark .modal-images-preview-grid {
     background-color: #1e293b;
     border-color: #334155;
@@ -1030,14 +1027,14 @@ body.dark-mode * {
 .modal-image-preview-item {
     position: relative;
     width: 100%;
-    padding-top: 100%; /* 1:1 aspect ratio */
+    padding-top: 100%; 
     overflow: hidden;
     border-radius: 8px;
     background-color: #f3f4f6;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark mode for preview items */
+
 .slothui-container.dark .modal-image-preview-item {
     background-color: #0f172a;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -1049,11 +1046,10 @@ body.dark-mode * {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Fill the square */
+    object-fit: cover;
     display: block;
 }
 
-/* Nút xóa ảnh trong Modal Preview */
 .modal-remove-image-btn {
     position: absolute;
     top: 8px;
@@ -1084,7 +1080,6 @@ body.dark-mode * {
 }
 
 
-/* Ảnh trong Posts Feed (Dành cho post chỉ có 1 ảnh - legacy support) */
 .post-image {
     margin-top: 15px;
     margin-bottom: 15px;
@@ -1099,36 +1094,29 @@ body.dark-mode * {
     transform: scale(0.99);
 }
 
-/* Dark mode for single post image */
 .slothui-container.dark .post-image {
     background-color: #1e293b;
 }
 
 .post-image img {
     max-width: 100%; 
-    height: auto; /* ⭐️ Chiều cao tự động để giữ tỷ lệ */
-    max-height: 500px; /* Giới hạn chiều cao */
+    height: auto; 
+    max-height: 500px; 
     width: 100%;
     display: block;
     object-fit: contain;
 }
 
-/* ======================================================== */
-/* 3. AVATAR EDIT (Style cho tính năng mới) */
-/* ======================================================== */
-
-/* Đảm bảo khung avatar có position: relative để nút edit ở góc */
 .profile-avatar-container {
     position: relative; 
-    display: inline-block; /* Quan trọng để chỉ chiếm đủ không gian */
+    display: inline-block;
 }
 
-/* Nút Chỉnh Sửa Avatar */
 .edit-avatar-btn {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: var(--color-primary, #6246ea); /* Sử dụng màu chính */
+    background: var(--color-primary, #6246ea);
     color: white;
     border: 2px solid var(--color-background-panel, #f0f0f0);
     border-radius: 50%;
@@ -1146,7 +1134,6 @@ body.dark-mode * {
     background: var(--color-primary-dark, #533ab7);
 }
 
-/* Modal Overlay */
 .avatar-edit-modal-overlay {
     position: fixed;
     top: 0;
@@ -1535,23 +1522,17 @@ body.dark-mode * {
 .image-preview-container {
     display: none;
 }
-/* ======================================================== */
-/* 6. XEM THÊM ẢNH (IMAGE GALLERY / LIGHTBOX MODAL) */
-/* ======================================================== */
-
-/* Lớp phủ (Overlay) */
 .image-gallery-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    /* Nền đen mờ hơn một chút so với modal đăng bài */
     background-color: rgba(0, 0, 0, 0.9); 
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1500; /* Đảm bảo nằm trên tất cả các modal khác */
+    z-index: 1500; 
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;

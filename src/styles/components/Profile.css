@@ -1,457 +1,402 @@
-:root {
-    --primary-color: #007bff; 
-    --text-color: #212529; 
-    --secondary-text-color: #6c757d; 
-    --background-light: #f8f9fa; 
-    --card-background: #ffffff; 
-    --border-color: #e9ecef; /* Màu viền nhẹ */
-    --shadow-light: rgba(0, 0, 0, 0.05); /* Bóng nhẹ */
-    --border-radius: 12px;
-}
-
-body {
-    font-family: 'Inter', sans-serif; /* Font hiện đại */
-    background-color: var(--background-light);
-    margin: 0;/* Thêm padding tổng thể */
+.profile-page-wrapper {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 30px 20px;
     display: flex;
     justify-content: center;
-    color: var(--text-color);
+    color: #212529;
     line-height: 1.6;
+    min-height: 100vh;
+    transition: all 0.3s ease;
 }
 
-.profile-container {
+.profile-page-wrapper.dark-mode {
+    background-color: #1a1a1a;
+    color: #e4e4e7;
+}
+
+.profile-page-loading-container {
     display: flex;
-    gap: 25px; /* Tăng khoảng cách giữa các cột */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    color: #6366f1;
+    font-weight: 600;
+}
+
+.profile-page-error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    color: #ef4444;
+    font-weight: 600;
+    text-align: center;
+    padding: 20px;
+}
+
+.profile-page-back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #374151;
+    border: 1px solid rgba(209, 213, 219, 0.8);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.profile-page-back-button:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.profile-page-wrapper.dark-mode .profile-page-back-button {
+    background: rgba(31, 41, 55, 0.95);
+    color: #e4e4e7;
+    border-color: rgba(75, 85, 99, 0.8);
+}
+
+.profile-page-wrapper.dark-mode .profile-page-back-button:hover {
+    background: rgba(31, 41, 55, 1);
+    border-color: #6b7280;
+}
+
+.profile-page-container {
+    display: flex;
+    gap: 25px;
     max-width: 1200px;
     width: 100%;
 }
 
-/* --- Card Base Styles --- */
-.card {
-    background-color: var(--card-background);
-    padding: 25px; /* Tăng padding */
-    border-radius: var(--border-radius);
-    box-shadow: 0 5px 15px var(--shadow-light); /* Bóng đổ mạnh hơn một chút */
-    margin-bottom: 25px; /* Tăng khoảng cách giữa các card */
-    border: 1px solid var(--border-color); /* Thêm viền nhẹ */
+.profile-page-main-content {
+    flex: 2.5;
+    min-width: 0;
 }
 
-/* --- Main Content (Left/Center) --- */
-.main-content {
-    flex: 2.5; /* Chiếm nhiều không gian hơn */
-    min-width: 0; /* Cho phép co giãn tốt hơn */
-}
-
-.header-card {
+.profile-page-header-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
     padding: 0;
     overflow: hidden;
     position: relative;
-    border-bottom-left-radius: 0; /* Loại bỏ bo góc dưới để gắn với About card */
-    border-bottom-right-radius: 0;
-    margin-bottom: 0; /* Gắn liền với About card */
+    transition: all 0.3s ease;
 }
 
-.cover-photo {
-    /* Sử dụng gradient và pattern hình học để giả lập ảnh bìa */
-    background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%); /* Màu xanh gradient */
-    height: 160px; /* Tăng chiều cao ảnh bìa */
+.profile-page-wrapper.dark-mode .profile-page-header-card {
+    background-color: #262626;
+    border-color: #404040;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page-cover-photo {
+    background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%);
+    height: 160px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
 }
-/* Thêm pattern giả lập cho ảnh bìa */
-.cover-photo::before {
+
+.profile-page-cover-photo::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
+    background-image: 
         linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.15) 75%, rgba(255,255,255,0.15) 100%),
         linear-gradient(-45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.15) 75%, rgba(255,255,255,0.15) 100%);
     background-size: 30px 30px;
 }
 
-
-.profile-info {
+.profile-page-header-info {
     display: flex;
     padding: 25px;
     align-items: flex-end;
     position: relative;
-    padding-top: 70px; /* Tạo không gian cho ảnh đại diện nhô lên */
+    padding-top: 70px;
 }
 
-.profile-picture {
-    width: 110px; /* Kích thước lớn hơn */
+.profile-page-avatar-wrapper {
+    width: 110px;
     height: 110px;
     border-radius: 50%;
-    background-color: var(--card-background); /* Nền trắng cho ảnh */
-    border: 5px solid var(--card-background); /* Viền trắng dày hơn */
+    background-color: #ffffff;
+    border: 5px solid #ffffff;
     position: absolute;
-    top: 100px; /* Đẩy lên cao hơn */
+    top: 100px;
     left: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Bóng nhẹ cho ảnh đại diện */
-    overflow: hidden; /* Đảm bảo ảnh bên trong không tràn */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
-.profile-picture img {
+
+.profile-page-avatar-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%; /* Đảm bảo ảnh bên trong cũng bo tròn */
+    border-radius: 50%;
 }
 
-
-.details {
-    margin-left: 140px; /* Khoảng cách từ ảnh đại diện */
+.profile-page-user-details {
+    margin-left: 140px;
     flex-grow: 1;
 }
 
-.details h1 {
+.profile-page-user-name {
     margin: 0 0 8px 0;
-    font-size: 28px; /* Tăng cỡ chữ */
-    color: var(--text-color);
+    font-size: 28px;
+    color: #212529;
     font-weight: 700;
+    transition: color 0.3s ease;
 }
 
-.title, .location {
+.profile-page-wrapper.dark-mode .profile-page-user-name {
+    color: #f9fafb;
+}
+
+.profile-page-user-title {
     margin: 0 0 6px 0;
-    color: var(--secondary-text-color);
+    color: #6c757d;
     font-size: 15px;
     display: flex;
     align-items: center;
+    transition: color 0.3s ease;
 }
-.location i {
+
+.profile-page-wrapper.dark-mode .profile-page-user-title {
+    color: #9ca3af;
+}
+
+.profile-page-user-location {
+    margin: 0 0 6px 0;
+    color: #6c757d;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-user-location {
+    color: #9ca3af;
+}
+
+.profile-page-user-location i {
     margin-right: 6px;
-    color: #a0aec0; /* Icon màu xám nhẹ */
+    color: #a0aec0;
     font-size: 14px;
 }
 
-.tags {
+.profile-page-tags-container {
     margin-top: 15px;
     display: flex;
-    flex-wrap: wrap; /* Cho phép xuống dòng nếu nhiều tag */
-    gap: 8px; /* Khoảng cách giữa các tag */
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.tags span {
-    background-color: #e6f7ff; /* Màu nền nhẹ hơn */
-    color: #1890ff; /* Màu chữ đậm hơn */
+.profile-page-tag {
+    background-color: #e6f7ff;
+    color: #1890ff;
     padding: 6px 12px;
-    border-radius: 20px; /* Bo tròn hơn */
+    border-radius: 20px;
     font-size: 13px;
     font-weight: 500;
     transition: background-color 0.2s, transform 0.2s;
 }
-.tags span:hover {
+
+.profile-page-tag:hover {
     background-color: #bae7ff;
     transform: translateY(-1px);
 }
 
-
-.send-message-btn {
-    background-color: var(--primary-color);
+.profile-page-send-message-btn {
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 12px 20px; /* Kích thước lớn hơn */
+    padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Khoảng cách giữa icon và chữ */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng mượt mà */
-}
-.send-message-btn:hover {
-    background-color: #0056b3; /* Màu đậm hơn khi hover */
-    transform: translateY(-2px); /* Nhấc nhẹ lên */
-}
-.send-message-btn i {
-    font-size: 16px;
-}
-
-
-.about-card {
-    border-top-left-radius: 0; /* Gắn liền với header card */
-    border-top-right-radius: 0;
-    margin-top: -25px; /* Dịch lên để ẩn border */
-    position: relative;
-    z-index: 1; /* Đảm bảo nằm trên header card (nếu cần) */
-    padding-top: 40px; /* Đẩy nội dung xuống sau khi dịch card lên */
-}
-
-.about-card h2 {
-    margin-top: 0;
-    font-size: 20px;
-    color: var(--text-color);
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.about-card p {
-    font-size: 15px;
-    color: var(--secondary-text-color);
-    margin-bottom: 15px;
-}
-
-.about-card .name-intro {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.read-more {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-block; /* Thay đổi từ block để căn chỉnh tốt hơn */
-    margin-top: 10px;
-    transition: color 0.2s;
-}
-.read-more:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-.placeholder-card {
-    text-align: center;
-    padding: 30px;
-}
-.placeholder-card h3 {
-    margin-top: 0;
-    font-size: 18px;
-    color: var(--text-color);
-}
-.placeholder-card p {
-    color: var(--secondary-text-color);
-    margin-bottom: 15px;
-}
-.placeholder-card .view-all {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-.placeholder-card .view-all:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-
-/* --- Sidebar (Right) --- */
-.sidebar {
-    flex: 1;
-    min-width: 280px; /* Giới hạn độ rộng tối thiểu */
-}
-
-.location-card h3, .connect-card h3, .similar-profiles-card h3 {
-    margin-top: 0;
-    font-size: 17px;
-    color: var(--text-color);
-    font-weight: 600;
-    margin-bottom: 15px;
     display: flex;
     align-items: center;
     gap: 8px;
-}
-.location-card h3 i, .connect-card h3 i, .similar-profiles-card h3 i {
-    color: #a0aec0; /* Icon màu xám nhẹ */
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.profile-page-send-message-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
 
-.connect-card .links p {
-    margin-bottom: 8px;
+.profile-page-send-message-btn i {
+    font-size: 16px;
 }
-.connect-card .links p:last-child {
-    margin-bottom: 0;
+
+.profile-page-about-card {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
 }
-.connect-card .links p a {
-    color: var(--secondary-text-color);
+
+.profile-page-wrapper.dark-mode .profile-page-about-card {
+    background-color: #262626;
+    border-color: #404040;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page-about-title {
+    margin-top: 0;
+    font-size: 20px;
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-about-title {
+    color: #f9fafb;
+}
+
+.profile-page-about-intro {
+    font-size: 15px;
+    color: #212529;
+    margin-bottom: 15px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-about-intro {
+    color: #e4e4e7;
+}
+
+.profile-page-about-text {
+    font-size: 15px;
+    color: #6c757d;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-about-text {
+    color: #a3a3a3;
+}
+
+.profile-page-read-more-link {
+    color: #007bff;
     text-decoration: none;
-    display: flex; /* Để icon và text trên cùng 1 hàng */
-    align-items: center;
-    padding: 5px 0;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 10px;
     transition: color 0.2s;
 }
-.connect-card .links p a:hover {
-    color: var(--primary-color);
-}
-.connect-card .links p i {
-    margin-right: 10px;
-    color: #a0aec0; /* Icon màu xám nhẹ */
-    width: 20px; /* Giữ icon căn thẳng hàng */
-    text-align: center;
+
+.profile-page-read-more-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }
 
-
-.similar-profiles-card .profile-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 18px; /* Tăng khoảng cách */
-    transition: background-color 0.2s;
-    padding: 8px;
-    margin: -8px; /* Để padding không làm xê dịch item */
-    border-radius: 8px;
-    cursor: pointer;
-}
-.similar-profiles-card .profile-item:hover {
-    background-color: #f0f2f5; /* Màu nền nhẹ khi hover */
-}
-
-
-.similar-profiles-card .avatar {
-    width: 45px; /* Kích thước lớn hơn */
-    height: 45px;
-    border-radius: 50%;
-    background-color: #ddd;
-    margin-right: 12px;
-    overflow: hidden;
-    flex-shrink: 0; /* Ngăn avatar bị co lại */
-}
-.similar-profiles-card .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-
-.similar-profiles-card .info {
-    flex-grow: 1;
-}
-.similar-profiles-card .info p {
-    margin: 0;
-    font-size: 15px;
-}
-
-.similar-profiles-card .info .name {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.similar-profiles-card .info .industry {
-    font-size: 13px;
-    color: var(--secondary-text-color);
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .profile-container {
-        flex-direction: column;
-        gap: 0; /* Loại bỏ gap khi xếp chồng */
-    }
-    .main-content, .sidebar {
-        flex: auto; /* Để chúng chiếm toàn bộ chiều rộng */
-        min-width: unset;
-    }
-    .header-card, .about-card, .card {
-        margin-bottom: 20px; /* Thêm lại khoảng cách giữa các card */
-        border-radius: var(--border-radius); /* Khôi phục bo góc */
-        border-top-left-radius: var(--border-radius);
-        border-top-right-radius: var(--border-radius);
-        border-bottom-left-radius: var(--border-radius);
-        border-bottom-right-radius: var(--border-radius);
-    }
-    .header-card {
-        margin-bottom: 20px; /* Tạo khoảng cách giữa header và about */
-    }
-    .about-card {
-        margin-top: 0; /* Bỏ dịch lên */
-        padding-top: 25px; /* Trả lại padding mặc định */
-    }
-}
-
-@media (max-width: 576px) {
-    body {
-        padding: 15px;
-    }
-    .profile-info {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding-top: 100px; /* Đẩy xuống thêm */
-    }
-    .profile-picture {
-        top: 80px; /* Điều chỉnh vị trí ảnh đại diện */
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    .details {
-        margin-left: 0;
-        margin-top: 20px;
-    }
-    .details h1 {
-        font-size: 24px;
-    }
-    .send-message-btn {
-        margin-top: 20px;
-        width: 100%;
-        justify-content: center;
-    }
-    .tags {
-        justify-content: center;
-    }
-}
-
-/* --- STYLES BỔ SUNG CHO ACTIVITY & POSTS (HOẠT ĐỘNG & BÀI VIẾT) --- */
-
-.activity-card {
-    /* Đã được định nghĩa trong .card, chỉ cần tinh chỉnh */
+.profile-page-activity-card {
+    background-color: #ffffff;
     padding: 30px 25px;
-    margin-top: 25px; /* Khoảng cách sau thẻ About */
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
 }
 
-.activity-card h2 {
+.profile-page-wrapper.dark-mode .profile-page-activity-card {
+    background-color: #262626;
+    border-color: #404040;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page-activity-title {
     font-size: 20px;
     font-weight: 600;
-    color: var(--text-color);
+    color: #212529;
     margin-bottom: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 0;
+    transition: color 0.3s ease;
 }
 
-.activity-card h2 i {
-    color: var(--primary-color);
+.profile-page-wrapper.dark-mode .profile-page-activity-title {
+    color: #f9fafb;
+}
+
+.profile-page-activity-title i {
+    color: #007bff;
     font-size: 18px;
 }
 
-.post-item {
-    border-bottom: 1px solid var(--border-color);
+.profile-page-no-posts {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.profile-page-no-posts-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    opacity: 0.5;
+}
+
+.profile-page-no-posts-text {
+    margin: 0;
+}
+
+.profile-page-post-item {
+    border-bottom: 1px solid #e9ecef;
     padding-bottom: 20px;
     margin-bottom: 20px;
 }
 
-.post-item:last-of-type {
+.profile-page-post-item:last-of-type {
     border-bottom: none;
     margin-bottom: 15px;
 }
 
-.post-header {
+.profile-page-post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
 }
 
-.post-user {
+.profile-page-post-user-info {
     display: flex;
     align-items: center;
     font-size: 14px;
-    color: var(--secondary-text-color);
+    color: #6c757d;
 }
 
-.post-author {
-    font-weight: 600;
-    color: var(--text-color);
-    margin-right: 5px;
-}
-
-.post-time {
-    font-size: 13px;
-    color: #a0aec0;
-}
-
-.avatar-small {
+.profile-page-post-avatar-wrapper {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -460,13 +405,33 @@ body {
     flex-shrink: 0;
 }
 
-.avatar-small img {
+.profile-page-post-avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.post-options {
+.profile-page-post-user-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-page-post-author {
+    font-weight: 600;
+    color: #212529;
+    margin-right: 5px;
+}
+
+.profile-page-post-action {
+    color: #6c757d;
+}
+
+.profile-page-post-time {
+    font-size: 13px;
+    color: #a0aec0;
+}
+
+.profile-page-post-options {
     color: #a0aec0;
     cursor: pointer;
     font-size: 16px;
@@ -475,67 +440,97 @@ body {
     transition: background-color 0.2s;
 }
 
-.post-options:hover {
+.profile-page-post-options:hover {
     background-color: #f0f2f5;
 }
 
-.post-content p {
-    font-size: 15px;
-    color: var(--text-color);
-    margin: 0 0 15px 0;
-    line-height: 1.6;
+.profile-page-post-content {
+    margin-bottom: 15px;
 }
 
-/* --- CẬP NHẬT: ĐỊNH DẠNG ẢNH BÀI VIẾT --- */
-.post-image-wrapper {
+.profile-page-post-text {
+    font-size: 15px;
+    color: #212529;
+    margin: 0;
+    line-height: 1.6;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-post-text {
+    color: #e4e4e7;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-post-author,
+.profile-page-wrapper.dark-mode .profile-page-comment-author,
+.profile-page-wrapper.dark-mode .profile-page-similar-profile-name {
+    color: #f9fafb;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-no-posts-text,
+.profile-page-wrapper.dark-mode .profile-page-connect-link {
+    color: #a3a3a3;
+}
+
+.profile-page-post-media-container {
     margin-top: 15px;
     margin-bottom: 15px;
-    overflow: hidden;
-    border-radius: 8px; /* Bo góc nhẹ cho khung ảnh */
-    border: 1px solid var(--border-color);
-    /* Đảm bảo khung ảnh chiếm toàn bộ chiều rộng của bài viết */
 }
 
-.post-image {
-    width: 100%; /* Chiếm toàn bộ chiều rộng của wrapper */
+.profile-page-post-single-image {
+    width: 100%;
     height: auto;
+    border-radius: 8px;
     display: block;
-    object-fit: cover; /* Quan trọng: Đảm bảo ảnh được cắt (nếu cần) và lấp đầy khung mà không bị méo */
-    /* object-fit: contain;  Nếu muốn ảnh hiển thị toàn bộ và có thể có viền trắng/xám */
-}
-/* ------------------------------------- */
-
-/* Post Actions (Thích/Bình luận/Chia sẻ) */
-.post-actions {
-    display: flex;
-    gap: 25px; /* Tăng khoảng cách */
-    padding-top: 10px;
-    border-top: 1px solid #f0f2f5;
-    margin-bottom: 15px;
 }
 
-.action-item {
-    font-size: 14px;
-    color: var(--secondary-text-color);
-    cursor: pointer;
-    transition: color 0.2s;
-    font-weight: 500;
+.profile-page-post-images-grid {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
 }
 
-.action-item:hover {
-    color: var(--primary-color);
+.profile-page-post-images-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
 }
 
-.action-item i {
-    margin-right: 5px;
-    font-size: 16px;
+.profile-page-post-images-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
 }
 
-/* Link Preview (cho bài share link) */
-.link-preview {
+.profile-page-post-image-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.profile-page-post-grid-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.profile-page-post-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
-    border: 1px solid var(--border-color);
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.profile-page-link-preview {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e9ecef;
     border-radius: 8px;
     overflow: hidden;
     padding: 10px;
@@ -544,11 +539,12 @@ body {
     cursor: pointer;
     transition: box-shadow 0.2s;
 }
-.link-preview:hover {
+
+.profile-page-link-preview:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.link-preview img {
+.profile-page-link-preview-image {
     width: 80px;
     height: 60px;
     object-fit: cover;
@@ -557,35 +553,59 @@ body {
     flex-shrink: 0;
 }
 
-.link-preview div {
+.profile-page-link-preview-content {
     display: flex;
     flex-direction: column;
 }
 
-.link-title {
+.profile-page-link-preview-title {
     font-weight: 600;
-    color: var(--text-color);
+    color: #212529;
     font-size: 15px;
     margin-bottom: 2px;
 }
 
-.link-url {
+.profile-page-link-preview-url {
     font-size: 13px;
-    color: var(--secondary-text-color);
+    color: #6c757d;
 }
 
-/* === COMMENT SECTION STYLES === */
-.comments-section {
+.profile-page-post-actions {
+    display: flex;
+    gap: 25px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f2f5;
+    margin-bottom: 15px;
+}
+
+.profile-page-action-item {
+    font-size: 14px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.profile-page-action-item:hover {
+    color: #007bff;
+}
+
+.profile-page-action-item i {
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+.profile-page-comments-section {
     padding: 10px 0 0 0;
 }
 
-.comment-item {
+.profile-page-comment-item {
     display: flex;
     align-items: flex-start;
     margin-bottom: 12px;
 }
 
-.avatar-xsmall {
+.profile-page-comment-avatar-wrapper {
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -594,91 +614,303 @@ body {
     flex-shrink: 0;
     background-color: #ddd;
 }
-.avatar-xsmall img {
+
+.profile-page-comment-avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Cần thêm wrapper để chứa cả comment body và media */
-.comment-body-wrapper {
+.profile-page-comment-body-wrapper {
     display: flex;
     flex-direction: column;
-    /* Giới hạn max-width tương đương với tổng width của comment-body cũ */
-    max-width: calc(100% - 38px); 
-    flex-grow: 1; /* Cho phép nó mở rộng hết mức có thể */
+    max-width: calc(100% - 38px);
+    flex-grow: 1;
 }
 
-/* Căn chỉnh lại comment body */
-.comment-body {
-    background-color: #f0f2f5; /* Nền xám nhẹ cho comment */
+.profile-page-comment-body {
+    background-color: #f0f2f5;
     padding: 8px 12px;
-    border-radius: 18px; /* Bo tròn comment */
-    max-width: 100%; /* Đã được giới hạn bởi wrapper */
+    border-radius: 18px;
+    max-width: 100%;
     font-size: 14px;
     line-height: 1.4;
     position: relative;
-    margin-bottom: 5px; /* Thêm khoảng cách với ảnh bên dưới */
+    margin-bottom: 5px;
 }
 
-/* Định dạng khối media */
-.comment-media {
+.profile-page-comment-author {
+    font-weight: 600;
+    color: #212529;
+    margin-right: 5px;
+}
+
+.profile-page-comment-text {
+    color: #212529;
+}
+
+.profile-page-comment-time {
+    font-size: 12px;
+    color: #a0aec0;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.profile-page-comment-media {
     margin: 5px 0 0 0;
     overflow: hidden;
     border-radius: 8px;
-    border: 1px solid var(--border-color);
-    max-width: 200px; /* Giới hạn kích thước ảnh trong comment */
+    border: 1px solid #e9ecef;
+    max-width: 200px;
     display: block;
-    /* Để căn chỉnh ảnh với khối comment body (padding: 8px 12px) */
-    margin-left: 10px; 
+    margin-left: 10px;
 }
 
-.comment-media .comment-image {
+.profile-page-comment-image {
     width: 100%;
     height: auto;
     display: block;
     object-fit: cover;
 }
 
-.comment-author {
-    font-weight: 600;
-    color: var(--text-color);
-    margin-right: 5px;
-}
-
-.comment-text {
-    color: var(--text-color);
-}
-
-.comment-time {
-    font-size: 12px;
-    color: #a0aec0;
-    display: inline-block; /* Để thời gian nằm trên cùng 1 dòng với nội dung */
-    margin-left: 8px;
-}
-
-.view-more-comments {
+.profile-page-view-more-comments {
     display: block;
     margin-top: 10px;
     font-size: 14px;
-    color: var(--primary-color);
+    color: #007bff;
     font-weight: 500;
     text-decoration: none;
-    margin-left: 38px; /* Căn chỉnh với body comment */
+    margin-left: 38px;
 }
-.view-more-comments:hover, .view-all-activity:hover {
+
+.profile-page-view-more-comments:hover {
     text-decoration: underline;
 }
 
-.view-all-activity {
+.profile-page-view-all-activity {
     display: block;
     text-align: center;
     margin-top: 10px;
     font-size: 15px;
-    color: var(--primary-color);
+    color: #007bff;
     font-weight: 600;
     text-decoration: none;
     padding-top: 15px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid #e9ecef;
     transition: color 0.2s;
+}
+
+.profile-page-view-all-activity:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.profile-page-sidebar {
+    flex: 1;
+    min-width: 280px;
+}
+
+.profile-page-location-card,
+.profile-page-connect-card,
+.profile-page-similar-profiles-card {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-location-card,
+.profile-page-wrapper.dark-mode .profile-page-connect-card,
+.profile-page-wrapper.dark-mode .profile-page-similar-profiles-card {
+    background-color: #262626;
+    border-color: #404040;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page-sidebar-title {
+    margin-top: 0;
+    font-size: 17px;
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-sidebar-title {
+    color: #f9fafb;
+}
+
+.profile-page-sidebar-title i {
+    color: #a0aec0;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-sidebar-title i {
+    color: #9ca3af;
+}
+
+.profile-page-sidebar-text {
+    margin: 0;
+    font-size: 15px;
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.profile-page-wrapper.dark-mode .profile-page-sidebar-text {
+    color: #a3a3a3;
+}
+
+.profile-page-connect-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-page-connect-item {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.profile-page-connect-item i {
+    margin-right: 10px;
+    color: #a0aec0;
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.profile-page-connect-link {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 5px 0;
+}
+
+.profile-page-connect-link:hover {
+    color: #007bff;
+}
+
+.profile-page-similar-profile-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    transition: background-color 0.2s;
+    padding: 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.profile-page-similar-profile-item:hover {
+    background-color: #f0f2f5;
+}
+
+.profile-page-similar-profile-item:last-child {
+    margin-bottom: 0;
+}
+
+.profile-page-similar-profile-avatar-wrapper {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin-right: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-page-similar-profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-page-similar-profile-info {
+    flex-grow: 1;
+}
+
+.profile-page-similar-profile-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #212529;
+}
+
+.profile-page-similar-profile-industry {
+    margin: 0;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+@media (max-width: 992px) {
+    .profile-page-container {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .profile-page-main-content,
+    .profile-page-sidebar {
+        flex: auto;
+        min-width: unset;
+    }
+    
+    .profile-page-header-card,
+    .profile-page-about-card,
+    .profile-page-activity-card,
+    .profile-page-location-card,
+    .profile-page-connect-card,
+    .profile-page-similar-profiles-card {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-page-wrapper {
+        padding: 15px;
+    }
+    
+    .profile-page-header-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 100px;
+    }
+    
+    .profile-page-avatar-wrapper {
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .profile-page-user-details {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+    
+    .profile-page-user-name {
+        font-size: 24px;
+    }
+    
+    .profile-page-send-message-btn {
+        margin-top: 20px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .profile-page-tags-container {
+        justify-content: center;
+    }
+    
+    .profile-page-post-images-grid-2,
+    .profile-page-post-images-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
