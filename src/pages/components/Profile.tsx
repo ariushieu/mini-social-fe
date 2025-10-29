@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../../styles/components/Profile.css";
-import { getPostsByUser } from "../../api/posts";
+import { getProfile } from "../../api/profile";
 import { useAuth } from "../../features/auth/AuthProvider";
 import Loading from "../../components/Loading";
 
@@ -24,6 +24,8 @@ interface ProfileUser {
     facebook?: string;
     instagram?: string;
   };
+  followerCount?: number;
+  followingCount?: number;
 }
 
 interface Comment {
@@ -104,9 +106,9 @@ const Profile: React.FC = () => {
   const [user, setUser] = useState<ProfileUser | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [similarProfiles] = useState<SimilarProfile[]>(mockSimilarProfiles);
-  const [showFullAbout, setShowFullAbout] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const hasShownErrorToast = React.useRef(false);
 
   // Check for dark mode from localStorage and apply to body
   useEffect(() => {
@@ -152,11 +154,17 @@ const Profile: React.FC = () => {
       try {
         setLoading(true);
 
-        // Fetch posts by user
-        const userPosts = await getPostsByUser(Number(userId));
+        // Debug: Check if we have tokens
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+        console.log("Has access token:", !!accessToken);
+        console.log("Has refresh token:", !!refreshToken);
+
+        // Fetch profile data with posts from profile API
+        const profileData = await getProfile(Number(userId));
 
         // Map API posts to local Post interface
-        const mappedPosts: Post[] = userPosts.map((post) => ({
+        const mappedPosts: Post[] = profileData.posts.map((post) => ({
           id: post.id,
           author:
             post.user.fullName || post.user.username || `User ${post.user.id}`,
@@ -180,63 +188,62 @@ const Profile: React.FC = () => {
 
         setPosts(mappedPosts);
 
-        // Determine user info based on userId and auth context
-        const isCurrentUser = auth.user && String(auth.user.id) === userId;
-
-        if (isCurrentUser && auth.user) {
-          // If viewing own profile, use auth user data
-          setUser({
-            id: String(auth.user.id),
-            name: auth.user.fullName || auth.user.username || "User",
-            title: auth.user.role || "Member",
-            location: "Việt Nam", // Default location
-            avatar:
-              auth.user.profilePicture || "https://via.placeholder.com/200",
-            tags: ["Member"], // Default tags
-            about: {
-              intro: `Xin chào, tôi là ${
-                auth.user.fullName || auth.user.username
-              }!`,
-              description: [auth.user.bio || "Chưa có thông tin giới thiệu."],
-            },
-            locationInfo: "Việt Nam",
-            socialLinks: {
-              website: undefined,
-              facebook: undefined,
-              instagram: undefined,
-            },
-          });
-        } else if (userPosts.length > 0) {
-          // If viewing other user's profile and they have posts, use data from posts
-          const postUser = userPosts[0].user;
-          setUser({
-            id: String(postUser.id),
-            name: postUser.fullName || postUser.username || "User",
-            title: "Member", // Default title
-            location: "Việt Nam",
-            avatar:
-              postUser.profilePicture || "https://via.placeholder.com/200",
-            tags: ["Member"], // Default tags
-            about: {
-              intro: `Xin chào, tôi là ${
-                postUser.fullName || postUser.username
-              }!`,
-              description: ["Chưa có thông tin giới thiệu."],
-            },
-            locationInfo: "Việt Nam",
-            socialLinks: {
-              website: undefined,
-              facebook: undefined,
-              instagram: undefined,
-            },
-          });
-        } else {
-          // If no posts and not current user, user not found
-          setUser(null);
-        }
-      } catch (error) {
+        // Set user profile data from API response
+        setUser({
+          id: String(profileData.id),
+          name: profileData.fullName || profileData.username || "User",
+          title: "Member",
+          location: "Việt Nam",
+          avatar:
+            profileData.profilePicture || "https://via.placeholder.com/200",
+          tags: ["Member"],
+          about: {
+            intro: `Xin chào, tôi là ${
+              profileData.fullName || profileData.username
+            }!`,
+            description: [profileData.bio || "Chưa có thông tin giới thiệu."],
+          },
+          locationInfo: `Tham gia: ${new Date(
+            profileData.joinDate
+          ).toLocaleDateString("vi-VN")} • Đăng nhập lần cuối: ${new Date(
+            profileData.lastLogin
+          ).toLocaleDateString("vi-VN")}`,
+          socialLinks: {
+            website: undefined,
+            facebook: undefined,
+            instagram: undefined,
+          },
+          followerCount: profileData.followerCount,
+          followingCount: profileData.followingCount,
+        });
+      } catch (error: any) {
         console.error("Error fetching user data:", error);
-        toast.error("Không thể tải thông tin người dùng");
+
+        // Handle different error cases - only show toast once using ref
+        if (!hasShownErrorToast.current) {
+          hasShownErrorToast.current = true;
+
+          if (error.response?.status === 401) {
+            // axiosConfig will handle redirect to login, no need for toast here
+            console.log("Token expired, will be redirected to login");
+          } else if (error.response?.status === 404) {
+            toast.error("Không tìm thấy người dùng này");
+          } else if (error.response) {
+            // Other HTTP errors
+            toast.error(
+              `Lỗi: ${error.response.status} - Không thể tải thông tin người dùng`
+            );
+          } else if (error.request) {
+            // Network error
+            toast.error(
+              "Lỗi kết nối. Vui lòng kiểm tra kết nối mạng hoặc server backend."
+            );
+          } else {
+            // Other errors
+            toast.error("Đã xảy ra lỗi không xác định");
+          }
+        }
+
         setUser(null);
         setPosts([]);
       } finally {
@@ -244,6 +251,8 @@ const Profile: React.FC = () => {
       }
     };
 
+    // Reset toast flag when userId changes
+    hasShownErrorToast.current = false;
     fetchUserData();
   }, [userId, navigate, auth.user]);
 
@@ -299,62 +308,89 @@ const Profile: React.FC = () => {
 
       <div className="profile-page-container">
         <div className="profile-page-main-content">
+          {/* Header Card with Cover Photo and Profile Info */}
           <div className="profile-page-header-card">
-            <div className="profile-page-cover-photo"></div>
-            <div className="profile-page-header-info">
-              <div className="profile-page-avatar-wrapper">
-                <img
-                  src={user.avatar}
-                  alt="Profile Picture"
-                  className="profile-page-avatar-img"
-                />
-              </div>
-              <div className="profile-page-user-details">
-                <h1 className="profile-page-user-name">{user.name}</h1>
-                <p className="profile-page-user-title">{user.title}</p>
-                <p className="profile-page-user-location">
-                  <i className="fas fa-map-marker-alt"></i> {user.location}
-                </p>
-                <div className="profile-page-tags-container">
-                  {user.tags.map((tag, index) => (
-                    <span key={index} className="profile-page-tag">
-                      {tag}
-                    </span>
-                  ))}
+            <div className="profile-page-cover-photo">
+              <div className="profile-page-cover-overlay"></div>
+            </div>
+            <div className="profile-page-header-content">
+              <div className="profile-page-avatar-section">
+                <div className="profile-page-avatar-wrapper">
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="profile-page-avatar-img"
+                  />
                 </div>
               </div>
-              <button
-                className="profile-page-send-message-btn"
-                onClick={handleSendMessage}
-              >
-                <i className="fas fa-paper-plane"></i> Send Message
-              </button>
+              <div className="profile-page-header-info">
+                <div className="profile-page-user-details">
+                  <h1 className="profile-page-user-name">{user.name}</h1>
+                  <p className="profile-page-user-username">@{user.id}</p>
+                  <p className="profile-page-user-location">
+                    <i className="fas fa-map-marker-alt"></i> {user.location}
+                  </p>
+                  {(user.followerCount !== undefined ||
+                    user.followingCount !== undefined) && (
+                    <div className="profile-page-stats">
+                      {user.followerCount !== undefined && (
+                        <div className="profile-page-stat-item">
+                          <strong>{user.followerCount.toLocaleString()}</strong>
+                          <span>Người theo dõi</span>
+                        </div>
+                      )}
+                      {user.followingCount !== undefined && (
+                        <div className="profile-page-stat-item">
+                          <strong>
+                            {user.followingCount.toLocaleString()}
+                          </strong>
+                          <span>Đang theo dõi</span>
+                        </div>
+                      )}
+                      <div className="profile-page-stat-item">
+                        <strong>{posts.length}</strong>
+                        <span>Bài viết</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="profile-page-actions">
+                  <button
+                    className="profile-page-send-message-btn"
+                    onClick={handleSendMessage}
+                  >
+                    <i className="fas fa-paper-plane"></i>
+                    <span>Nhắn tin</span>
+                  </button>
+                  <button className="profile-page-follow-btn">
+                    <i className="fas fa-user-plus"></i>
+                    <span>Theo dõi</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* About Card */}
           <div className="profile-page-about-card">
-            <h2 className="profile-page-about-title">About Me</h2>
-            <p className="profile-page-about-intro">{user.about.intro}</p>
-            {user.about.description.map((paragraph, index) => (
-              <p key={index} className="profile-page-about-text">
-                {paragraph}
-              </p>
-            ))}
-            <a
-              href="#"
-              className="profile-page-read-more-link"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowFullAbout(!showFullAbout);
-              }}
-            >
-              {showFullAbout ? "Show Less..." : "Read More..."}
-            </a>
+            <h2 className="profile-page-about-title">
+              <i className="fas fa-user"></i> Giới thiệu
+            </h2>
+            <p className="profile-page-about-text">
+              {user.about.description[0]}
+            </p>
+            <div className="profile-page-info-grid">
+              <div className="profile-page-info-item">
+                <i className="fas fa-calendar-alt"></i>
+                <span>{user.locationInfo}</span>
+              </div>
+            </div>
           </div>
 
+          {/* Activity Card */}
           <div className="profile-page-activity-card">
             <h2 className="profile-page-activity-title">
-              <i className="fas fa-stream"></i> Hoạt động gần đây
+              <i className="fas fa-th-large"></i> Bài viết ({posts.length})
             </h2>
 
             {posts.length === 0 ? (
