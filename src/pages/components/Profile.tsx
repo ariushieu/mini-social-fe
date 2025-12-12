@@ -19,6 +19,8 @@ interface ProfileUser {
     description: string[];
   };
   locationInfo: string;
+  joinDate?: string;
+  lastLogin?: string;
   socialLinks: {
     website?: string;
     facebook?: string;
@@ -71,30 +73,26 @@ const mockSimilarProfiles: SimilarProfile[] = [
   {
     id: 1,
     name: "Vicente Reyes",
-    industry: "Industry",
-    avatar:
-      "https://media.vov.vn/sites/default/files/styles/large/public/2022-12/messi.jpg",
+    industry: "Designer",
+    avatar: "https://i.pravatar.cc/150?img=11",
   },
   {
     id: 2,
     name: "Marc Brooks",
-    industry: "Industry",
-    avatar:
-      "https://media.vov.vn/sites/default/files/styles/large/public/2022-12/messi.jpg",
+    industry: "Developer",
+    avatar: "https://i.pravatar.cc/150?img=12",
   },
   {
     id: 3,
     name: "Ronald Bailey",
-    industry: "Industry",
-    avatar:
-      "https://media.vov.vn/sites/default/files/styles/large/public/2022-12/messi.jpg",
+    industry: "Marketing",
+    avatar: "https://i.pravatar.cc/150?img=13",
   },
   {
     id: 4,
     name: "Fannie Waters",
-    industry: "Industry",
-    avatar:
-      "https://media.vov.vn/sites/default/files/styles/large/public/2022-12/messi.jpg",
+    industry: "Product Manager",
+    avatar: "https://i.pravatar.cc/150?img=14",
   },
 ];
 
@@ -164,38 +162,59 @@ const Profile: React.FC = () => {
         const profileData = await getProfile(Number(userId));
 
         // Map API posts to local Post interface
-        const mappedPosts: Post[] = profileData.posts.map((post) => ({
-          id: post.id,
-          author:
-            post.user.fullName || post.user.username || `User ${post.user.id}`,
-          avatar: post.user.profilePicture || "https://via.placeholder.com/50",
-          action: "đã đăng một bài viết",
-          time: post.createdAt
-            ? new Date(post.createdAt).toLocaleDateString("vi-VN")
-            : "recently",
-          content: post.content,
-          images: post.media?.map((m) => m.mediaUrl) || [], // Map all media
-          image:
-            post.media && post.media.length > 0
-              ? post.media[0].mediaUrl
-              : undefined,
-          stats: {
-            likes: post.likeCount || 0,
-            comments: post.commentCount || 0,
-            shares: 0,
-          },
-        }));
+        const mappedPosts: Post[] = profileData.posts.map((post) => {
+          const postAuthor =
+            post.user.fullName || post.user.username || `User ${post.user.id}`;
+          const postAvatar =
+            post.user.profilePicture && post.user.profilePicture.trim() !== ""
+              ? post.user.profilePicture
+              : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  postAuthor
+                )}&background=1877f2&color=fff&size=50`;
 
-        setPosts(mappedPosts);
+          return {
+            id: post.id,
+            author: postAuthor,
+            avatar: postAvatar,
+            action: "đã đăng một bài viết",
+            time: post.createdAt
+              ? new Date(post.createdAt).toLocaleDateString("vi-VN")
+              : "recently",
+            content: post.content,
+            images: post.media?.map((m) => m.mediaUrl) || [], // Map all media
+            image:
+              post.media && post.media.length > 0
+                ? post.media[0].mediaUrl
+                : undefined,
+            stats: {
+              likes: post.likeCount || 0,
+              comments: post.commentCount || 0,
+              shares: 0,
+            },
+          };
+        });
+
+        setPosts(mappedPosts.reverse());
 
         // Set user profile data from API response
+        console.log(
+          "DEBUG profileData.profilePicture:",
+          profileData.profilePicture
+        );
+        const avatarUrl =
+          profileData.profilePicture && profileData.profilePicture.trim() !== ""
+            ? profileData.profilePicture
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                profileData.fullName || profileData.username || "User"
+              )}&background=1877f2&color=fff&size=200`;
+        console.log("DEBUG avatarUrl:", avatarUrl);
+
         setUser({
           id: String(profileData.id),
           name: profileData.fullName || profileData.username || "User",
           title: "Member",
           location: "Việt Nam",
-          avatar:
-            profileData.profilePicture || "https://via.placeholder.com/200",
+          avatar: avatarUrl,
           tags: ["Member"],
           about: {
             intro: `Xin chào, tôi là ${
@@ -203,11 +222,11 @@ const Profile: React.FC = () => {
             }!`,
             description: [profileData.bio || "Chưa có thông tin giới thiệu."],
           },
-          locationInfo: `Tham gia: ${new Date(
-            profileData.joinDate
-          ).toLocaleDateString("vi-VN")} • Đăng nhập lần cuối: ${new Date(
-            profileData.lastLogin
-          ).toLocaleDateString("vi-VN")}`,
+          joinDate: new Date(profileData.joinDate).toLocaleDateString("vi-VN"),
+          lastLogin: new Date(profileData.lastLogin).toLocaleDateString(
+            "vi-VN"
+          ),
+          locationInfo: "",
           socialLinks: {
             website: undefined,
             facebook: undefined,
@@ -280,7 +299,7 @@ const Profile: React.FC = () => {
   if (loading) {
     return (
       <Loading
-        type="skeleton"
+        type="spinner"
         fullscreen
         text="Đang tải thông tin người dùng..."
       />
@@ -297,348 +316,195 @@ const Profile: React.FC = () => {
 
   return (
     <div className={`profile-page-wrapper ${isDarkMode ? "dark-mode" : ""}`}>
-      <button
-        onClick={() => navigate("/")}
-        className="profile-page-back-button"
-        title="Quay lại trang chủ"
-      >
-        <i className="fas fa-chevron-left"></i>
-        <span>Trang chủ</span>
-      </button>
-
-      <div className="profile-page-container">
-        <div className="profile-page-main-content">
-          {/* Header Card with Cover Photo and Profile Info */}
-          <div className="profile-page-header-card">
-            <div className="profile-page-cover-photo">
-              <div className="profile-page-cover-overlay"></div>
+      {/* Cover + Profile Header - Full Width */}
+      <div className="profile-header-section">
+        <div className="profile-cover">
+          <button onClick={() => navigate("/")} className="profile-back-btn">
+            ← Trang chủ
+          </button>
+        </div>
+        <div className="profile-header-container">
+          <div className="profile-header-row">
+            <div className="profile-avatar-wrapper">
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="profile-avatar-img"
+              />
             </div>
-            <div className="profile-page-header-content">
-              <div className="profile-page-avatar-section">
-                <div className="profile-page-avatar-wrapper">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="profile-page-avatar-img"
-                  />
-                </div>
-              </div>
-              <div className="profile-page-header-info">
-                <div className="profile-page-user-details">
-                  <h1 className="profile-page-user-name">{user.name}</h1>
-                  <p className="profile-page-user-username">@{user.id}</p>
-                  <p className="profile-page-user-location">
-                    <i className="fas fa-map-marker-alt"></i> {user.location}
-                  </p>
-                  {(user.followerCount !== undefined ||
-                    user.followingCount !== undefined) && (
-                    <div className="profile-page-stats">
-                      {user.followerCount !== undefined && (
-                        <div className="profile-page-stat-item">
-                          <strong>{user.followerCount.toLocaleString()}</strong>
-                          <span>Người theo dõi</span>
-                        </div>
-                      )}
-                      {user.followingCount !== undefined && (
-                        <div className="profile-page-stat-item">
-                          <strong>
-                            {user.followingCount.toLocaleString()}
-                          </strong>
-                          <span>Đang theo dõi</span>
-                        </div>
-                      )}
-                      <div className="profile-page-stat-item">
-                        <strong>{posts.length}</strong>
-                        <span>Bài viết</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="profile-page-actions">
-                  <button
-                    className="profile-page-send-message-btn"
-                    onClick={handleSendMessage}
-                  >
-                    <i className="fas fa-paper-plane"></i>
-                    <span>Nhắn tin</span>
-                  </button>
-                  <button className="profile-page-follow-btn">
-                    <i className="fas fa-user-plus"></i>
-                    <span>Theo dõi</span>
-                  </button>
-                </div>
-              </div>
+            <div className="profile-info">
+              <h1 className="profile-name">{user.name}</h1>
+              <p className="profile-friends">
+                {user.followerCount?.toLocaleString() || 0} người theo dõi ·{" "}
+                {user.followingCount?.toLocaleString() || 0} đang theo dõi
+              </p>
+            </div>
+            <div className="profile-actions">
+              <button
+                className="profile-btn-primary"
+                onClick={handleSendMessage}
+              >
+                Nhắn tin
+              </button>
+              <button className="profile-btn-secondary">Theo dõi</button>
             </div>
           </div>
-
-          {/* About Card */}
-          <div className="profile-page-about-card">
-            <h2 className="profile-page-about-title">
-              <i className="fas fa-user"></i> Giới thiệu
-            </h2>
-            <p className="profile-page-about-text">
-              {user.about.description[0]}
-            </p>
-            <div className="profile-page-info-grid">
-              <div className="profile-page-info-item">
-                <i className="fas fa-calendar-alt"></i>
-                <span>{user.locationInfo}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Activity Card */}
-          <div className="profile-page-activity-card">
-            <h2 className="profile-page-activity-title">
-              <i className="fas fa-th-large"></i> Bài viết ({posts.length})
-            </h2>
-
-            {posts.length === 0 ? (
-              <div className="profile-page-no-posts">
-                <i className="fas fa-inbox profile-page-no-posts-icon"></i>
-                <p className="profile-page-no-posts-text">
-                  Người dùng này chưa có bài viết nào.
-                </p>
-              </div>
-            ) : (
-              posts.map((post) => (
-                <div key={post.id} className="profile-page-post-item">
-                  <div className="profile-page-post-header">
-                    <div className="profile-page-post-user-info">
-                      <div className="profile-page-post-avatar-wrapper">
-                        <img
-                          src={post.avatar}
-                          alt="Avatar"
-                          className="profile-page-post-avatar"
-                        />
-                      </div>
-                      <div className="profile-page-post-user-text">
-                        <span className="profile-page-post-author">
-                          {post.author}
-                        </span>{" "}
-                        <span className="profile-page-post-action">
-                          {post.action}
-                        </span>
-                        <span className="profile-page-post-time">
-                          {" "}
-                          • {post.time}
-                        </span>
-                      </div>
-                    </div>
-                    <i className="fas fa-ellipsis-h profile-page-post-options"></i>
-                  </div>
-
-                  <div className="profile-page-post-content">
-                    <p className="profile-page-post-text">{post.content}</p>
-                  </div>
-
-                  {post.images && post.images.length > 0 && (
-                    <div className="profile-page-post-media-container">
-                      {post.images.length === 1 ? (
-                        <img
-                          src={post.images[0]}
-                          alt="Ảnh bài đăng"
-                          className="profile-page-post-single-image"
-                        />
-                      ) : (
-                        <div
-                          className={`profile-page-post-images-grid profile-page-post-images-grid-${
-                            post.images.length === 2 ? "2" : "3"
-                          }`}
-                        >
-                          {post.images.slice(0, 6).map((imgUrl, idx) => (
-                            <div
-                              key={idx}
-                              className="profile-page-post-image-item"
-                            >
-                              <img
-                                src={imgUrl}
-                                alt={`Ảnh ${idx + 1}`}
-                                className="profile-page-post-grid-image"
-                              />
-                              {idx === 5 && post.images!.length > 6 && (
-                                <div className="profile-page-post-image-overlay">
-                                  +{post.images!.length - 6}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {post.linkPreview && (
-                    <div className="profile-page-link-preview">
-                      <img
-                        src={post.linkPreview.image}
-                        alt="Link Preview"
-                        className="profile-page-link-preview-image"
-                      />
-                      <div className="profile-page-link-preview-content">
-                        <span className="profile-page-link-preview-title">
-                          {post.linkPreview.title}
-                        </span>
-                        <span className="profile-page-link-preview-url">
-                          {post.linkPreview.url}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="profile-page-post-actions">
-                    <span
-                      className="profile-page-action-item"
-                      onClick={() => handleLike(post.id)}
-                    >
-                      <i className="far fa-heart"></i> {post.stats.likes} Thích
-                    </span>
-                    <span
-                      className="profile-page-action-item"
-                      onClick={() => handleComment(post.id)}
-                    >
-                      <i className="far fa-comment-dots"></i>{" "}
-                      {post.stats.comments} Bình luận
-                    </span>
-                    {post.stats.shares !== undefined && (
-                      <span
-                        className="profile-page-action-item"
-                        onClick={() => handleShare(post.id)}
-                      >
-                        <i className="far fa-share-square"></i> Chia sẻ
-                      </span>
-                    )}
-                  </div>
-
-                  {post.commentsList && post.commentsList.length > 0 && (
-                    <div className="profile-page-comments-section">
-                      {post.commentsList.map((comment) => (
-                        <div
-                          key={comment.id}
-                          className="profile-page-comment-item"
-                        >
-                          <div className="profile-page-comment-avatar-wrapper">
-                            <img
-                              src={comment.avatar}
-                              alt="Avatar"
-                              className="profile-page-comment-avatar"
-                            />
-                          </div>
-                          <div className="profile-page-comment-body-wrapper">
-                            <div className="profile-page-comment-body">
-                              <span className="profile-page-comment-author">
-                                {comment.author}
-                              </span>
-                              <span className="profile-page-comment-text">
-                                {comment.text}
-                              </span>
-                              <span className="profile-page-comment-time">
-                                {" "}
-                                • {comment.time}
-                              </span>
-                            </div>
-                            {comment.image && (
-                              <div className="profile-page-comment-media">
-                                <img
-                                  src={comment.image}
-                                  alt="Ảnh bình luận"
-                                  className="profile-page-comment-image"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-
-                      {post.totalComments &&
-                        post.totalComments > post.commentsList.length && (
-                          <a
-                            href="#"
-                            className="profile-page-view-more-comments"
-                          >
-                            Xem tất cả {post.totalComments} bình luận...
-                          </a>
-                        )}
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-
-            {posts.length > 0 && (
-              <a href="#" className="profile-page-view-all-activity">
-                Xem tất cả hoạt động
-              </a>
-            )}
+          <div className="profile-tabs">
+            <span className="profile-tab active">Bài viết</span>
+            <span className="profile-tab">Giới thiệu</span>
+            <span className="profile-tab">Ảnh</span>
           </div>
         </div>
+      </div>
 
-        <div className="profile-page-sidebar">
-          <div className="profile-page-location-card">
-            <h3 className="profile-page-sidebar-title">
-              <i className="fas fa-globe-americas"></i> Location
-            </h3>
-            <p className="profile-page-sidebar-text">{user.locationInfo}</p>
-          </div>
-
-          <div className="profile-page-connect-card">
-            <h3 className="profile-page-sidebar-title">
-              <i className="fas fa-link"></i> Connect
-            </h3>
-            <div className="profile-page-connect-links">
-              {user.socialLinks.website && (
-                <p className="profile-page-connect-item">
-                  <i className="fas fa-globe"></i>{" "}
-                  <a href="#" className="profile-page-connect-link">
-                    {user.socialLinks.website}
-                  </a>
-                </p>
+      {/* Content Area - 2 columns */}
+      <div className="profile-content">
+        {/* Left Sidebar */}
+        <div className="profile-sidebar">
+          <div className="profile-card">
+            <h3 className="profile-card-title">Giới thiệu</h3>
+            <p className="profile-bio">{user.about.description[0]}</p>
+            <div className="profile-info-list">
+              <div className="profile-info-row">
+                <span className="profile-info-icon">📍</span>
+                <span className="profile-info-text">
+                  Sống tại <strong>{user.location}</strong>
+                </span>
+              </div>
+              {user.joinDate && (
+                <div className="profile-info-row">
+                  <span className="profile-info-icon">📅</span>
+                  <span className="profile-info-text">
+                    Tham gia <strong>{user.joinDate}</strong>
+                  </span>
+                </div>
               )}
-              {user.socialLinks.facebook && (
-                <p className="profile-page-connect-item">
-                  <i className="fab fa-facebook"></i>{" "}
-                  <a href="#" className="profile-page-connect-link">
-                    {user.socialLinks.facebook}
-                  </a>
-                </p>
-              )}
-              {user.socialLinks.instagram && (
-                <p className="profile-page-connect-item">
-                  <i className="fab fa-instagram"></i>{" "}
-                  <a href="#" className="profile-page-connect-link">
-                    {user.socialLinks.instagram}
-                  </a>
-                </p>
+              {user.lastLogin && (
+                <div className="profile-info-row">
+                  <span className="profile-info-icon">🕐</span>
+                  <span className="profile-info-text">
+                    Đăng nhập lần cuối <strong>{user.lastLogin}</strong>
+                  </span>
+                </div>
               )}
             </div>
           </div>
 
-          <div className="profile-page-similar-profiles-card">
-            <h3 className="profile-page-sidebar-title">
-              <i className="fas fa-users"></i> Similar profiles
-            </h3>
+          <div className="profile-card">
+            <h3 className="profile-card-title">Gợi ý theo dõi</h3>
             {similarProfiles.map((profile) => (
-              <div
-                key={profile.id}
-                className="profile-page-similar-profile-item"
-              >
-                <div className="profile-page-similar-profile-avatar-wrapper">
-                  <img
-                    src={profile.avatar}
-                    alt="Avatar"
-                    className="profile-page-similar-profile-avatar"
-                  />
-                </div>
-                <div className="profile-page-similar-profile-info">
-                  <p className="profile-page-similar-profile-name">
-                    {profile.name}
-                  </p>
-                  <p className="profile-page-similar-profile-industry">
+              <div key={profile.id} className="profile-suggest-item">
+                <img
+                  src={profile.avatar}
+                  alt=""
+                  className="profile-suggest-avatar"
+                />
+                <div className="profile-suggest-info">
+                  <span className="profile-suggest-name">{profile.name}</span>
+                  <span className="profile-suggest-role">
                     {profile.industry}
-                  </p>
+                  </span>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Right - Posts */}
+        <div className="profile-main">
+          <div className="profile-card">
+            <h3 className="profile-card-title">Bài viết</h3>
+            {posts.length === 0 ? (
+              <p className="profile-no-posts">Chưa có bài viết nào.</p>
+            ) : (
+              posts.map((post) => (
+                <div key={post.id} className="post-item">
+                  <div className="post-header">
+                    <img src={post.avatar} alt="" className="post-avatar" />
+                    <div className="post-meta">
+                      <span className="post-author">{post.author}</span>
+                      <span className="post-time">{post.time}</span>
+                    </div>
+                  </div>
+                  <p className="post-text">{post.content}</p>
+                  {post.images && post.images.length > 0 && (
+                    <div
+                      className={`post-images post-images-${Math.min(
+                        post.images.length,
+                        4
+                      )}`}
+                    >
+                      {post.images.slice(0, 4).map((img, idx) => (
+                        <div key={idx} className="post-image-item">
+                          <img src={img} alt="" />
+                          {idx === 3 && post.images!.length > 4 && (
+                            <div className="post-image-more">
+                              +{post.images!.length - 4}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="post-stats">
+                    <span>{post.stats.likes} lượt thích</span>
+                    <span>{post.stats.comments} bình luận</span>
+                  </div>
+                  <div className="post-actions">
+                    <button
+                      className="post-action"
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                      Thích
+                    </button>
+                    <button
+                      className="post-action"
+                      onClick={() => handleComment(post.id)}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                      </svg>
+                      Bình luận
+                    </button>
+                    <button
+                      className="post-action"
+                      onClick={() => handleShare(post.id)}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                      Chia sẻ
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

@@ -673,9 +673,7 @@ const SlothuiInterface = () => {
   };
 
   if (!user) {
-    return (
-      <Loading type="pulse" fullscreen text="Đang khởi tạo trang chủ..." />
-    );
+    return <Loading type="spinner" fullscreen text="Đang tải..." />;
   }
 
   return (
