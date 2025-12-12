@@ -996,21 +996,24 @@ const SlothuiInterface = () => {
                 <button className="profile-read-more">Xem Thêm</button>
               </div>
 
-              {/* Story Highlights */}
+              {/* ⭐️ CẬP NHẬT: Thay thế Tin Nổi Bật bằng Ảnh Gần Đây */}
               <div className="profile-highlights">
-                <h3 className="profile-section-title">Tin Nổi Bật</h3>
-                <div className="highlights-container">
-                  {user.storyHighlights.map((story) => (
-                    <div key={story.id} className="highlight-item">
-                      <img
-                        src={story.image}
-                        alt={story.name}
-                        className="highlight-image"
-                      />
-                      <span className="highlight-name">{story.name}</span>
-                    </div>
-                  ))}
-                </div>
+                <h3 className="profile-section-title">Ảnh Gần Đây</h3>
+                {posts.filter(p => p.images && p.images.length > 0).length > 0 ? (
+                  <div className="profile-photos-grid">
+                    {posts
+                      .filter((p) => p.images && p.images.length > 0)
+                      .flatMap((p) => p.images || [])
+                      .slice(0, 9) // Lấy tối đa 9 ảnh
+                      .map((img, idx) => (
+                        <div key={idx} className="profile-photo-item" onClick={() => handleViewImage([img], 0)}>
+                          <img src={img} alt="Recent" />
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <p className="profile-empty-text">Chưa có ảnh nào.</p>
+                )}
               </div>
 
               {/* Contact Info */}

@@ -3,6 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../../styles/components/Profile.css";
 import { getProfile } from "../../api/profile";
+import {
+  likePost,
+  unlikePost,
+  checkLike,
+  getLikes,
+  type LikeUser,
+} from "../../api/posts";
 import { useAuth } from "../../features/auth/AuthProvider";
 import Loading from "../../components/Loading";
 
@@ -106,6 +113,12 @@ const Profile: React.FC = () => {
   const [similarProfiles] = useState<SimilarProfile[]>(mockSimilarProfiles);
   const [loading, setLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [likesModal, setLikesModal] = useState<{
+    postId: number;
+    users: LikeUser[];
+  } | null>(null);
+  const [loadingLikes, setLoadingLikes] = useState(false);
   const hasShownErrorToast = React.useRef(false);
 
   // Check for dark mode from localStorage and apply to body
@@ -194,7 +207,24 @@ const Profile: React.FC = () => {
           };
         });
 
-        setPosts(mappedPosts.reverse());
+        const reversedPosts = mappedPosts.reverse();
+        setPosts(reversedPosts);
+
+        // Check like status for each post
+        const likedSet = new Set<number>();
+        await Promise.all(
+          reversedPosts.map(async (post) => {
+            try {
+              const isLiked = await checkLike(post.id);
+              if (isLiked) {
+                likedSet.add(post.id);
+              }
+            } catch {
+              // Ignore errors for individual like checks
+            }
+          })
+        );
+        setLikedPosts(likedSet);
 
         // Set user profile data from API response
         console.log(
@@ -281,9 +311,47 @@ const Profile: React.FC = () => {
     toast.info("Tính năng nhắn tin đang được phát triển");
   };
 
-  const handleLike = (postId: number) => {
-    console.log("Like post:", postId);
-    toast.info("Tính năng like đang được phát triển");
+  const handleLike = async (postId: number) => {
+    const isLiked = likedPosts.has(postId);
+
+    try {
+      if (isLiked) {
+        // Unlike
+        await unlikePost(postId);
+        setLikedPosts((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(postId);
+          return newSet;
+        });
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  stats: { ...post.stats, likes: post.stats.likes - 1 },
+                }
+              : post
+          )
+        );
+      } else {
+        // Like
+        await likePost(postId);
+        setLikedPosts((prev) => new Set(prev).add(postId));
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  stats: { ...post.stats, likes: post.stats.likes + 1 },
+                }
+              : post
+          )
+        );
+      }
+    } catch (error: any) {
+      console.error("Error toggling like:", error);
+      toast.error("Không thể thực hiện thao tác");
+    }
   };
 
   const handleComment = (postId: number) => {
@@ -294,6 +362,23 @@ const Profile: React.FC = () => {
   const handleShare = (postId: number) => {
     console.log("Share post:", postId);
     toast.info("Tính năng share đang được phát triển");
+  };
+
+  const handleShowLikes = async (postId: number) => {
+    try {
+      setLoadingLikes(true);
+      const users = await getLikes(postId);
+      setLikesModal({ postId, users });
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+      toast.error("Không thể tải danh sách người thích");
+    } finally {
+      setLoadingLikes(false);
+    }
+  };
+
+  const closeLikesModal = () => {
+    setLikesModal(null);
   };
 
   if (loading) {
@@ -447,25 +532,34 @@ const Profile: React.FC = () => {
                     </div>
                   )}
                   <div className="post-stats">
-                    <span>{post.stats.likes} lượt thích</span>
+                    <span
+                      className="post-stats-likes"
+                      onClick={() => handleShowLikes(post.id)}
+                    >
+                      {post.stats.likes} lượt thích
+                    </span>
                     <span>{post.stats.comments} bình luận</span>
                   </div>
                   <div className="post-actions">
                     <button
-                      className="post-action"
+                      className={`post-action ${
+                        likedPosts.has(post.id) ? "liked" : ""
+                      }`}
                       onClick={() => handleLike(post.id)}
                     >
                       <svg
                         width="20"
                         height="20"
                         viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
+                        fill={likedPosts.has(post.id) ? "#e74c3c" : "none"}
+                        stroke={
+                          likedPosts.has(post.id) ? "#e74c3c" : "currentColor"
+                        }
                         strokeWidth="2"
                       >
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                       </svg>
-                      Thích
+                      {likedPosts.has(post.id) ? "Đã thích" : "Thích"}
                     </button>
                     <button
                       className="post-action"
@@ -508,6 +602,59 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Likes Modal */}
+      {likesModal && (
+        <div className="likes-modal-overlay" onClick={closeLikesModal}>
+          <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="likes-modal-header">
+              <h3>Người đã thích</h3>
+              <button className="likes-modal-close" onClick={closeLikesModal}>
+                ✕
+              </button>
+            </div>
+            <div className="likes-modal-body">
+              {loadingLikes ? (
+                <div className="likes-modal-loading">Đang tải...</div>
+              ) : likesModal.users.length === 0 ? (
+                <div className="likes-modal-empty">
+                  Chưa có ai thích bài viết này
+                </div>
+              ) : (
+                likesModal.users.map((likeUser) => (
+                  <div
+                    key={likeUser.id}
+                    className="likes-modal-user"
+                    onClick={() => {
+                      closeLikesModal();
+                      navigate(`/profile/${likeUser.id}`);
+                    }}
+                  >
+                    <img
+                      src={
+                        likeUser.profilePicture ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          likeUser.fullName || likeUser.username
+                        )}&background=1877f2&color=fff&size=40`
+                      }
+                      alt=""
+                      className="likes-modal-avatar"
+                    />
+                    <div className="likes-modal-info">
+                      <span className="likes-modal-name">
+                        {likeUser.fullName || likeUser.username}
+                      </span>
+                      <span className="likes-modal-username">
+                        @{likeUser.username}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

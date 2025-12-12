@@ -80,10 +80,57 @@ export const deletePost = async (id: number): Promise<void> => {
   });
 };
 
+export const likePost = async (postId: number): Promise<void> => {
+  await axios.post(
+    `http://localhost:8080/api/v1/posts/${postId}/likes`,
+    {},
+    {
+      headers: authHeaders(),
+    }
+  );
+};
+
+export const unlikePost = async (postId: number): Promise<void> => {
+  await axios.delete(`http://localhost:8080/api/v1/posts/${postId}/likes`, {
+    headers: authHeaders(),
+  });
+};
+
+export const checkLike = async (postId: number): Promise<boolean> => {
+  const response = await axios.get<boolean>(
+    `http://localhost:8080/api/v1/posts/${postId}/likes/check`,
+    {
+      headers: authHeaders(),
+    }
+  );
+  return response.data;
+};
+
+export interface LikeUser {
+  id: number;
+  username: string;
+  fullName?: string;
+  profilePicture?: string;
+}
+
+export const getLikes = async (postId: number): Promise<LikeUser[]> => {
+  const response = await axios.get<LikeUser[]>(
+    `http://localhost:8080/api/v1/posts/${postId}/likes`,
+    {
+      headers: authHeaders(),
+    }
+  );
+  return response.data;
+};
+
 export default {
   createPost,
   getPosts,
   getPost,
   updatePost,
   deletePost,
+  likePost,
+  unlikePost,
+  checkLike,
+  getLikes,
 };

@@ -1,0 +1,38 @@
+/* ⭐️ CẬP NHẬT: Styles cho phần Ảnh Gần Đây */
+.home-page .profile-photos-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0.5rem;
+	justify-content: center;
+}
+
+.home-page .profile-photo-item {
+	position: relative;
+	width: 100%;
+	padding-top: 100%; /* Aspect ratio 1:1 */
+	overflow: hidden;
+	border-radius: 6px;
+	cursor: pointer;
+	background-color: #f3f4f6;
+}
+
+.home-page .profile-photo-item img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.2s;
+}
+
+.home-page .profile-photo-item:hover img {
+	transform: scale(1.05);
+}
+
+.home-page .profile-empty-text {
+	text-align: center;
+	color: #9ca3af;
+	font-size: 0.875rem;
+	font-style: italic;
+}
