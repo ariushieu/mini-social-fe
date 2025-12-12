@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axiosConfig";
 import { type LoginRequest, type LoginResponse } from "../types/auth/AuthLogin";
 import {type RegisterRequest, type RegisterResponse } from "../types/auth/AuthRegister";
 
