@@ -1,12 +1,7 @@
-import axios from "axios";
+import axios from "./axiosConfig";
 import type { PostResponse, CreatePostRequest } from "../types/post/Post";
 
 const API_URL = "http://localhost:8080/api/posts";
-
-function authHeaders() {
-  const token = localStorage.getItem("accessToken");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
 
 export const createPost = async (
   data: CreatePostRequest
@@ -20,7 +15,6 @@ export const createPost = async (
   // Controller expects POST /api/posts/create
   const response = await axios.post<PostResponse>(`${API_URL}/create`, form, {
     headers: {
-      ...authHeaders(),
       "Content-Type": "multipart/form-data",
     },
   });
@@ -29,9 +23,7 @@ export const createPost = async (
 };
 
 export const getPosts = async (): Promise<PostResponse[]> => {
-  const response = await axios.get<PostResponse[]>(`${API_URL}`, {
-    headers: authHeaders(),
-  });
+  const response = await axios.get<PostResponse[]>(`${API_URL}`);
   return response.data;
 };
 
@@ -39,18 +31,13 @@ export const getPostsByUser = async (
   userId: number
 ): Promise<PostResponse[]> => {
   const response = await axios.get<PostResponse[]>(
-    `${API_URL}/lists/${userId}`,
-    {
-      headers: authHeaders(),
-    }
+    `${API_URL}/lists/${userId}`
   );
   return response.data;
 };
 
 export const getPost = async (id: number): Promise<PostResponse> => {
-  const response = await axios.get<PostResponse>(`${API_URL}/${id}`, {
-    headers: authHeaders(),
-  });
+  const response = await axios.get<PostResponse>(`${API_URL}/${id}`);
   return response.data;
 };
 
@@ -66,7 +53,6 @@ export const updatePost = async (
 
   const response = await axios.put<PostResponse>(`${API_URL}/${id}`, form, {
     headers: {
-      ...authHeaders(),
       "Content-Type": "multipart/form-data",
     },
   });
@@ -75,33 +61,23 @@ export const updatePost = async (
 };
 
 export const deletePost = async (id: number): Promise<void> => {
-  await axios.delete(`${API_URL}/${id}`, {
-    headers: authHeaders(),
-  });
+  await axios.delete(`${API_URL}/${id}`);
 };
 
 export const likePost = async (postId: number): Promise<void> => {
   await axios.post(
     `http://localhost:8080/api/v1/posts/${postId}/likes`,
-    {},
-    {
-      headers: authHeaders(),
-    }
+    {}
   );
 };
 
 export const unlikePost = async (postId: number): Promise<void> => {
-  await axios.delete(`http://localhost:8080/api/v1/posts/${postId}/likes`, {
-    headers: authHeaders(),
-  });
+  await axios.delete(`http://localhost:8080/api/v1/posts/${postId}/likes`);
 };
 
 export const checkLike = async (postId: number): Promise<boolean> => {
   const response = await axios.get<boolean>(
-    `http://localhost:8080/api/v1/posts/${postId}/likes/check`,
-    {
-      headers: authHeaders(),
-    }
+    `http://localhost:8080/api/v1/posts/${postId}/likes/check`
   );
   return response.data;
 };
@@ -115,10 +91,7 @@ export interface LikeUser {
 
 export const getLikes = async (postId: number): Promise<LikeUser[]> => {
   const response = await axios.get<LikeUser[]>(
-    `http://localhost:8080/api/v1/posts/${postId}/likes`,
-    {
-      headers: authHeaders(),
-    }
+    `http://localhost:8080/api/v1/posts/${postId}/likes`
   );
   return response.data;
 };
