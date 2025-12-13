@@ -1,5 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
+// Axios instance riêng cho refresh token - không có interceptor
+const refreshAxios = axios.create();
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -79,8 +82,8 @@ axios.interceptors.response.use(
       }
 
       try {
-        // Call refresh token API trực tiếp không qua interceptor
-        const response = await axios.post(
+        // Call refresh token API với axios instance riêng (không có interceptor)
+        const response = await refreshAxios.post(
           "http://localhost:8080/api/auth/refresh",
           { refreshToken: storedRefreshToken }
         );
@@ -104,16 +107,9 @@ axios.interceptors.response.use(
         return axios(originalRequest);
       } catch (refreshError: any) {
         // Refresh token thất bại hoặc hết hạn
-        console.error("Refresh token failed:", refreshError);
         processQueue(refreshError as Error, null);
         isRefreshing = false;
         localStorage.clear();
-
-        // Show user-friendly error message
-        if (refreshError.response?.status === 401) {
-          console.log("Refresh token expired or invalid");
-        }
-
         window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
