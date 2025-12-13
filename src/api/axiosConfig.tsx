@@ -45,9 +45,9 @@ axios.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Nếu lỗi 401 và chưa retry và không phải request refresh token
+    // Nếu lỗi 401 hoặc 403 (token expired) và chưa retry và không phải request refresh token
     if (
-      error.response?.status === 401 &&
+      (error.response?.status === 401 || error.response?.status === 403) &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/refresh")
     ) {
