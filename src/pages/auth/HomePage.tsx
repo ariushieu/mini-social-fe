@@ -25,7 +25,7 @@ import {
 import { toast } from "react-toastify";
 
 import "../../styles/page/HomePage.css";
-import { createPost } from "../../api/posts";
+import { createPost, getFollowingFeed, checkLike } from "../../api/posts";
 import { useAuth } from "../../features/auth/AuthProvider";
 import Loading from "../../components/Loading";
 
@@ -523,6 +523,11 @@ const SlothuiInterface = () => {
   // State để quản lý việc chỉnh sửa avatar
   const [isEditingAvatar, setIsEditingAvatar] = useState<boolean>(false);
 
+  // State cho loading posts
+  const [loadingPosts, setLoadingPosts] = useState<boolean>(false);
+  const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
+  const [followingLoaded, setFollowingLoaded] = useState<boolean>(false);
+
   // ⭐️ BỔ SUNG: State và hàm cho Modal xem ảnh toàn màn hình
   const [viewerState, setViewerState] = useState<{
     images: string[];
@@ -585,6 +590,71 @@ const SlothuiInterface = () => {
   useEffect(() => {
     localStorage.setItem("isDarkMode", isDark.toString());
   }, [isDark]);
+
+  // Fetch following feed when tab changes to "Following"
+  useEffect(() => {
+    const fetchFollowingFeed = async () => {
+      if (activeTab !== "Following" || followingLoaded) return;
+
+      setLoadingPosts(true);
+      try {
+        const response = await getFollowingFeed(0, 20);
+        const mappedPosts: Post[] = await Promise.all(
+          response.content.map(async (post) => {
+            const postAuthor =
+              post.user.fullName ||
+              post.user.username ||
+              `User ${post.user.id}`;
+            const postAvatar =
+              post.user.profilePicture && post.user.profilePicture.trim() !== ""
+                ? post.user.profilePicture
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    postAuthor
+                  )}&background=1877f2&color=fff&size=50`;
+
+            // Check if current user liked this post
+            let isLiked = false;
+            try {
+              isLiked = await checkLike(post.id);
+            } catch {
+              // Ignore error
+            }
+
+            return {
+              id: post.id,
+              user: {
+                id: post.user.id,
+                name: postAuthor,
+                role: "Member",
+                avatar: postAvatar,
+              },
+              content: post.content,
+              hashtags: [],
+              images: post.media?.map((m) => m.mediaUrl) || [],
+              stats: {
+                likes: post.likeCount || 0,
+                comments: post.commentCount || 0,
+                shares: 0,
+              },
+              timestamp: post.createdAt
+                ? new Date(post.createdAt).toLocaleDateString("vi-VN")
+                : "recently",
+              isLiked,
+            };
+          })
+        );
+        setFollowingPosts(mappedPosts);
+        setFollowingLoaded(true);
+      } catch (error) {
+        console.error("Error fetching following feed:", error);
+        toast.error("Không thể tải bài viết từ người bạn theo dõi");
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    fetchFollowingFeed();
+  }, [activeTab, followingLoaded]);
 
   const handleLike = (postId: number) => {
     if (!isAuthenticated) {
@@ -837,118 +907,131 @@ const SlothuiInterface = () => {
 
             {/* Posts Feed (CẬP NHẬT: gắn onClick để mở ImageViewerModal) */}
             <div className="posts-feed">
-              {posts.map((post) => (
-                <div key={post.id} className="post">
-                  <div className="post-container">
-                    <img
-                      src={post.user.avatar}
-                      alt={post.user.name}
-                      className="post-avatar"
-                      onClick={() => navigate(`/profile/${post.user.id}`)}
-                      style={{ cursor: "pointer" }}
-                    />
-                    <div className="post-content">
-                      <div className="post-header">
-                        <div
-                          className="post-user-info"
-                          onClick={() => navigate(`/profile/${post.user.id}`)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <h4>{post.user.name}</h4>
-                          <p>{post.user.role}</p>
+              {loadingPosts && activeTab === "Following" ? (
+                <div className="loading-posts">Đang tải bài viết...</div>
+              ) : activeTab === "Following" &&
+                followingPosts.length === 0 &&
+                followingLoaded ? (
+                <div className="no-posts">
+                  <p>Chưa có bài viết nào từ người bạn theo dõi.</p>
+                  <p>Hãy theo dõi thêm người dùng để xem bài viết của họ!</p>
+                </div>
+              ) : null}
+              {(activeTab === "For You" ? posts : followingPosts).map(
+                (post) => (
+                  <div key={post.id} className="post">
+                    <div className="post-container">
+                      <img
+                        src={post.user.avatar}
+                        alt={post.user.name}
+                        className="post-avatar"
+                        onClick={() => navigate(`/profile/${post.user.id}`)}
+                        style={{ cursor: "pointer" }}
+                      />
+                      <div className="post-content">
+                        <div className="post-header">
+                          <div
+                            className="post-user-info"
+                            onClick={() => navigate(`/profile/${post.user.id}`)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <h4>{post.user.name}</h4>
+                            <p>{post.user.role}</p>
+                          </div>
+                          <div className="post-meta">
+                            <span className="post-timestamp">
+                              {post.timestamp}
+                            </span>
+                            <button className="post-menu">
+                              <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                            </button>
+                          </div>
                         </div>
-                        <div className="post-meta">
-                          <span className="post-timestamp">
-                            {post.timestamp}
-                          </span>
-                          <button className="post-menu">
-                            <MoreHorizontal className="w-4 h-4 text-gray-400" />
+
+                        <div className="post-body">
+                          <p className="post-text">{post.content}</p>
+                          {post.hashtags.length > 0 && (
+                            <div className="post-hashtags">
+                              {post.hashtags.map((tag, index) => (
+                                <span key={index} className="post-hashtag">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* ⭐️ CẬP NHẬT: Logic hiển thị nhiều ảnh theo Grid (THÊM onClick) */}
+                          {post.images &&
+                            post.images.length > 0 &&
+                            (post.images.length > 1 ? (
+                              <div
+                                className="post-images-grid"
+                                data-count={Math.min(post.images.length, 4)}
+                              >
+                                {post.images
+                                  .slice(0, 4)
+                                  .map((imageSrc, index) => (
+                                    <div
+                                      key={index}
+                                      className="post-image-item"
+                                      // ⭐️ THÊM: Gắn sự kiện onClick vào đây
+                                      onClick={() =>
+                                        handleViewImage(post.images!, index)
+                                      }
+                                    >
+                                      <img
+                                        src={imageSrc}
+                                        alt={`Post content ${index + 1}`}
+                                      />
+                                      {/* Overlay cho ảnh thứ 4 nếu có nhiều hơn 4 ảnh */}
+                                      {post.images!.length > 4 &&
+                                        index === 3 && (
+                                          <div className="post-image-overlay">
+                                            + {post.images!.length - 4}
+                                          </div>
+                                        )}
+                                    </div>
+                                  ))}
+                              </div>
+                            ) : (
+                              /* Nếu chỉ có 1 ảnh, gắn sự kiện onClick */
+                              <div
+                                className="post-image"
+                                onClick={() => handleViewImage(post.images!, 0)}
+                              >
+                                <img src={post.images[0]} alt="Post content" />
+                              </div>
+                            ))}
+                        </div>
+
+                        <div className="post-actions">
+                          <button
+                            onClick={() => handleLike(post.id)}
+                            className="post-action like-btn"
+                          >
+                            <Heart className="post-action-icon" />
+                            <span>{post.stats.likes} Likes</span>
+                          </button>
+
+                          <button className="post-action comment-btn">
+                            <MessageCircle className="post-action-icon" />
+                            <span>{post.stats.comments} Comments</span>
+                          </button>
+
+                          <button className="post-action share-btn">
+                            <Share className="post-action-icon" />
+                            <span>{post.stats.shares} Share</span>
+                          </button>
+
+                          <button className="post-bookmark">
+                            <Bookmark className="post-action-icon" />
                           </button>
                         </div>
                       </div>
-
-                      <div className="post-body">
-                        <p className="post-text">{post.content}</p>
-                        {post.hashtags.length > 0 && (
-                          <div className="post-hashtags">
-                            {post.hashtags.map((tag, index) => (
-                              <span key={index} className="post-hashtag">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* ⭐️ CẬP NHẬT: Logic hiển thị nhiều ảnh theo Grid (THÊM onClick) */}
-                        {post.images &&
-                          post.images.length > 0 &&
-                          (post.images.length > 1 ? (
-                            <div
-                              className="post-images-grid"
-                              data-count={Math.min(post.images.length, 4)}
-                            >
-                              {post.images
-                                .slice(0, 4)
-                                .map((imageSrc, index) => (
-                                  <div
-                                    key={index}
-                                    className="post-image-item"
-                                    // ⭐️ THÊM: Gắn sự kiện onClick vào đây
-                                    onClick={() =>
-                                      handleViewImage(post.images!, index)
-                                    }
-                                  >
-                                    <img
-                                      src={imageSrc}
-                                      alt={`Post content ${index + 1}`}
-                                    />
-                                    {/* Overlay cho ảnh thứ 4 nếu có nhiều hơn 4 ảnh */}
-                                    {post.images!.length > 4 && index === 3 && (
-                                      <div className="post-image-overlay">
-                                        + {post.images!.length - 4}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                            </div>
-                          ) : (
-                            /* Nếu chỉ có 1 ảnh, gắn sự kiện onClick */
-                            <div
-                              className="post-image"
-                              onClick={() => handleViewImage(post.images!, 0)}
-                            >
-                              <img src={post.images[0]} alt="Post content" />
-                            </div>
-                          ))}
-                      </div>
-
-                      <div className="post-actions">
-                        <button
-                          onClick={() => handleLike(post.id)}
-                          className="post-action like-btn"
-                        >
-                          <Heart className="post-action-icon" />
-                          <span>{post.stats.likes} Likes</span>
-                        </button>
-
-                        <button className="post-action comment-btn">
-                          <MessageCircle className="post-action-icon" />
-                          <span>{post.stats.comments} Comments</span>
-                        </button>
-
-                        <button className="post-action share-btn">
-                          <Share className="post-action-icon" />
-                          <span>{post.stats.shares} Share</span>
-                        </button>
-
-                        <button className="post-bookmark">
-                          <Bookmark className="post-action-icon" />
-                        </button>
-                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
 

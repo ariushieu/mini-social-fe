@@ -19,6 +19,37 @@ export type PostResponse = {
   commentCount?: number;
   createdAt?: string;
   media?: PostMedia[];
+  isLiked?: boolean;
+};
+
+// Newsfeed API response types
+export type NewsfeedResponse = {
+  content: PostResponse[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      empty: boolean;
+      unsorted: boolean;
+      sorted: boolean;
+    };
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    unsorted: boolean;
+    sorted: boolean;
+  };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
 };
 
 export type CreatePostRequest = {

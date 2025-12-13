@@ -1,7 +1,12 @@
 import axios from "./axiosConfig";
-import type { PostResponse, CreatePostRequest } from "../types/post/Post";
+import type {
+  PostResponse,
+  CreatePostRequest,
+  NewsfeedResponse,
+} from "../types/post/Post";
 
 const API_URL = "http://localhost:8080/api/posts";
+const API_V1_URL = "http://localhost:8080/api/v1";
 
 export const createPost = async (
   data: CreatePostRequest
@@ -65,10 +70,7 @@ export const deletePost = async (id: number): Promise<void> => {
 };
 
 export const likePost = async (postId: number): Promise<void> => {
-  await axios.post(
-    `http://localhost:8080/api/v1/posts/${postId}/likes`,
-    {}
-  );
+  await axios.post(`http://localhost:8080/api/v1/posts/${postId}/likes`, {});
 };
 
 export const unlikePost = async (postId: number): Promise<void> => {
@@ -96,6 +98,17 @@ export const getLikes = async (postId: number): Promise<LikeUser[]> => {
   return response.data;
 };
 
+// Get newsfeed from followed users
+export const getFollowingFeed = async (
+  page = 0,
+  size = 20
+): Promise<NewsfeedResponse> => {
+  const response = await axios.get<NewsfeedResponse>(
+    `${API_V1_URL}/newsfeed?page=${page}&size=${size}`
+  );
+  return response.data;
+};
+
 export default {
   createPost,
   getPosts,
@@ -106,4 +119,5 @@ export default {
   unlikePost,
   checkLike,
   getLikes,
+  getFollowingFeed,
 };
