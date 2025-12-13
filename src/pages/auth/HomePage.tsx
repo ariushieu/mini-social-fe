@@ -782,7 +782,11 @@ const SlothuiInterface = () => {
           </nav>
 
           {/* User Profile at bottom */}
-          <div className="user-profile-bottom">
+          <div
+            className="user-profile-bottom"
+            onClick={() => navigate(`/profile/${auth.user?.id}`)}
+            style={{ cursor: "pointer" }}
+          >
             <div className="user-profile-info">
               <img src={user.avatar} alt="User" className="user-avatar-small" />
               <div className="flex-1">
@@ -999,14 +1003,19 @@ const SlothuiInterface = () => {
               {/* ⭐️ CẬP NHẬT: Thay thế Tin Nổi Bật bằng Ảnh Gần Đây */}
               <div className="profile-highlights">
                 <h3 className="profile-section-title">Ảnh Gần Đây</h3>
-                {posts.filter(p => p.images && p.images.length > 0).length > 0 ? (
+                {posts.filter((p) => p.images && p.images.length > 0).length >
+                0 ? (
                   <div className="profile-photos-grid">
                     {posts
                       .filter((p) => p.images && p.images.length > 0)
                       .flatMap((p) => p.images || [])
                       .slice(0, 9) // Lấy tối đa 9 ảnh
                       .map((img, idx) => (
-                        <div key={idx} className="profile-photo-item" onClick={() => handleViewImage([img], 0)}>
+                        <div
+                          key={idx}
+                          className="profile-photo-item"
+                          onClick={() => handleViewImage([img], 0)}
+                        >
                           <img src={img} alt="Recent" />
                         </div>
                       ))}
