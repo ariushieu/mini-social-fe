@@ -10,6 +10,14 @@ import {
   getLikes,
   type LikeUser,
 } from "../../api/posts";
+import {
+  followUser,
+  unfollowUser,
+  checkFollowStatus,
+  getFollowers,
+  getFollowing,
+  type FollowUser,
+} from "../../api/follow";
 import { useAuth } from "../../features/auth/AuthProvider";
 import Loading from "../../components/Loading";
 
@@ -119,6 +127,13 @@ const Profile: React.FC = () => {
     users: LikeUser[];
   } | null>(null);
   const [loadingLikes, setLoadingLikes] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [followModal, setFollowModal] = useState<{
+    type: "followers" | "following";
+    users: FollowUser[];
+  } | null>(null);
+  const [loadingFollow, setLoadingFollow] = useState(false);
   const hasShownErrorToast = React.useRef(false);
 
   // Check for dark mode from localStorage and apply to body
@@ -265,6 +280,16 @@ const Profile: React.FC = () => {
           followerCount: profileData.followerCount,
           followingCount: profileData.followingCount,
         });
+
+        // Check follow status nếu không phải profile của mình
+        if (String(auth.user?.id) !== String(userId)) {
+          try {
+            const following = await checkFollowStatus(Number(userId));
+            setIsFollowing(following);
+          } catch {
+            // Ignore error, default to not following
+          }
+        }
       } catch (error: any) {
         console.error("Error fetching user data:", error);
 
@@ -309,6 +334,52 @@ const Profile: React.FC = () => {
     if (!user) return;
     console.log("Send message to:", user.name);
     toast.info("Tính năng nhắn tin đang được phát triển");
+  };
+
+  const handleFollow = async () => {
+    if (!user || followLoading) return;
+
+    const targetUserId = Number(user.id);
+
+    try {
+      setFollowLoading(true);
+
+      if (isFollowing) {
+        await unfollowUser(targetUserId);
+        setIsFollowing(false);
+        setUser((prev) =>
+          prev
+            ? { ...prev, followerCount: (prev.followerCount || 1) - 1 }
+            : prev
+        );
+        toast.success("Đã bỏ theo dõi");
+      } else {
+        await followUser(targetUserId);
+        setIsFollowing(true);
+        setUser((prev) =>
+          prev
+            ? { ...prev, followerCount: (prev.followerCount || 0) + 1 }
+            : prev
+        );
+        toast.success("Đã theo dõi");
+      }
+    } catch (error: any) {
+      console.error("Error toggling follow:", error);
+      const errorMsg = error.response?.data;
+
+      // Xử lý trường hợp đã follow rồi
+      if (errorMsg === "You already follow this user.") {
+        setIsFollowing(true);
+        toast.info("Bạn đã theo dõi người này rồi");
+      } else if (errorMsg === "You are not following this user.") {
+        setIsFollowing(false);
+        toast.info("Bạn chưa theo dõi người này");
+      } else {
+        toast.error("Không thể thực hiện thao tác");
+      }
+    } finally {
+      setFollowLoading(false);
+    }
   };
 
   const handleLike = async (postId: number) => {
@@ -381,6 +452,38 @@ const Profile: React.FC = () => {
     setLikesModal(null);
   };
 
+  const handleShowFollowers = async () => {
+    if (!userId) return;
+    try {
+      setLoadingFollow(true);
+      const users = await getFollowers(Number(userId));
+      setFollowModal({ type: "followers", users });
+    } catch (error) {
+      console.error("Error fetching followers:", error);
+      toast.error("Không thể tải danh sách người theo dõi");
+    } finally {
+      setLoadingFollow(false);
+    }
+  };
+
+  const handleShowFollowing = async () => {
+    if (!userId) return;
+    try {
+      setLoadingFollow(true);
+      const users = await getFollowing(Number(userId));
+      setFollowModal({ type: "following", users });
+    } catch (error) {
+      console.error("Error fetching following:", error);
+      toast.error("Không thể tải danh sách đang theo dõi");
+    } finally {
+      setLoadingFollow(false);
+    }
+  };
+
+  const closeFollowModal = () => {
+    setFollowModal(null);
+  };
+
   if (loading) {
     return (
       <Loading
@@ -420,19 +523,44 @@ const Profile: React.FC = () => {
             <div className="profile-info">
               <h1 className="profile-name">{user.name}</h1>
               <p className="profile-friends">
-                {user.followerCount?.toLocaleString() || 0} người theo dõi ·{" "}
-                {user.followingCount?.toLocaleString() || 0} đang theo dõi
+                <span
+                  className="profile-follow-link"
+                  onClick={handleShowFollowers}
+                >
+                  {user.followerCount?.toLocaleString() || 0} người theo dõi
+                </span>
+                {" · "}
+                <span
+                  className="profile-follow-link"
+                  onClick={handleShowFollowing}
+                >
+                  {user.followingCount?.toLocaleString() || 0} đang theo dõi
+                </span>
               </p>
             </div>
-            <div className="profile-actions">
-              <button
-                className="profile-btn-primary"
-                onClick={handleSendMessage}
-              >
-                Nhắn tin
-              </button>
-              <button className="profile-btn-secondary">Theo dõi</button>
-            </div>
+            {String(auth.user?.id) !== String(userId) && (
+              <div className="profile-actions">
+                <button
+                  className="profile-btn-primary"
+                  onClick={handleSendMessage}
+                >
+                  Nhắn tin
+                </button>
+                <button
+                  className={`profile-btn-secondary ${
+                    isFollowing ? "following" : ""
+                  }`}
+                  onClick={handleFollow}
+                  disabled={followLoading}
+                >
+                  {followLoading
+                    ? "..."
+                    : isFollowing
+                    ? "Đang theo dõi"
+                    : "Theo dõi"}
+                </button>
+              </div>
+            )}
           </div>
           <div className="profile-tabs">
             <span className="profile-tab active">Bài viết</span>
@@ -646,6 +774,65 @@ const Profile: React.FC = () => {
                       </span>
                       <span className="likes-modal-username">
                         @{likeUser.username}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Follow Modal */}
+      {followModal && (
+        <div className="likes-modal-overlay" onClick={closeFollowModal}>
+          <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="likes-modal-header">
+              <h3>
+                {followModal.type === "followers"
+                  ? "Người theo dõi"
+                  : "Đang theo dõi"}
+              </h3>
+              <button className="likes-modal-close" onClick={closeFollowModal}>
+                ✕
+              </button>
+            </div>
+            <div className="likes-modal-body">
+              {loadingFollow ? (
+                <div className="likes-modal-loading">Đang tải...</div>
+              ) : followModal.users.length === 0 ? (
+                <div className="likes-modal-empty">
+                  {followModal.type === "followers"
+                    ? "Chưa có người theo dõi"
+                    : "Chưa theo dõi ai"}
+                </div>
+              ) : (
+                followModal.users.map((followUser) => (
+                  <div
+                    key={followUser.id}
+                    className="likes-modal-user"
+                    onClick={() => {
+                      closeFollowModal();
+                      navigate(`/profile/${followUser.id}`);
+                    }}
+                  >
+                    <img
+                      src={
+                        followUser.profilePicture ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          followUser.fullName || followUser.username
+                        )}&background=1877f2&color=fff&size=40`
+                      }
+                      alt=""
+                      className="likes-modal-avatar"
+                    />
+                    <div className="likes-modal-info">
+                      <span className="likes-modal-name">
+                        {followUser.fullName || followUser.username}
+                      </span>
+                      <span className="likes-modal-username">
+                        @{followUser.username}
                       </span>
                     </div>
                   </div>

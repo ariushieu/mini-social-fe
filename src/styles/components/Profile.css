@@ -104,6 +104,16 @@
   font-size: 15px;
 }
 
+.profile-follow-link {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.profile-follow-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
 .profile-actions {
   display: flex;
   gap: 8px;
