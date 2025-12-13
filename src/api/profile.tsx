@@ -38,16 +38,8 @@ export interface ProfileResponse {
 }
 
 export const getProfile = async (userId: number): Promise<ProfileResponse> => {
-  try {
-    console.log(`Fetching profile for userId: ${userId}`);
-    const response = await axios.post<ProfileResponse>(`${API_URL}/${userId}`);
-    console.log("Profile data received:", response.data);
-    return response.data;
-  } catch (error: any) {
-    console.error("Error in getProfile:", error);
-    console.error("Error response:", error.response);
-    throw error;
-  }
+  const response = await axios.post<ProfileResponse>(`${API_URL}/${userId}`);
+  return response.data;
 };
 
 export default {
