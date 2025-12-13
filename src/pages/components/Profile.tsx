@@ -18,6 +18,15 @@ import {
   getFollowing,
   type FollowUser,
 } from "../../api/follow";
+import {
+  getComments,
+  createComment,
+  getReplies,
+  likeComment,
+  unlikeComment,
+  checkCommentLike,
+  type Comment as CommentType,
+} from "../../api/comments";
 import { useAuth } from "../../features/auth/AuthProvider";
 import Loading from "../../components/Loading";
 
@@ -134,6 +143,18 @@ const Profile: React.FC = () => {
     users: FollowUser[];
   } | null>(null);
   const [loadingFollow, setLoadingFollow] = useState(false);
+  const [commentsModal, setCommentsModal] = useState<{
+    postId: number;
+    comments: CommentType[];
+  } | null>(null);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(
+    new Set()
+  );
+  const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
   const hasShownErrorToast = React.useRef(false);
 
   // Check for dark mode from localStorage and apply to body
@@ -179,12 +200,6 @@ const Profile: React.FC = () => {
 
       try {
         setLoading(true);
-
-        // Debug: Check if we have tokens
-        const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-        console.log("Has access token:", !!accessToken);
-        console.log("Has refresh token:", !!refreshToken);
 
         // Fetch profile data with posts from profile API
         const profileData = await getProfile(Number(userId));
@@ -242,17 +257,12 @@ const Profile: React.FC = () => {
         setLikedPosts(likedSet);
 
         // Set user profile data from API response
-        console.log(
-          "DEBUG profileData.profilePicture:",
-          profileData.profilePicture
-        );
         const avatarUrl =
           profileData.profilePicture && profileData.profilePicture.trim() !== ""
             ? profileData.profilePicture
             : `https://ui-avatars.com/api/?name=${encodeURIComponent(
                 profileData.fullName || profileData.username || "User"
               )}&background=1877f2&color=fff&size=200`;
-        console.log("DEBUG avatarUrl:", avatarUrl);
 
         setUser({
           id: String(profileData.id),
@@ -298,8 +308,7 @@ const Profile: React.FC = () => {
           hasShownErrorToast.current = true;
 
           if (error.response?.status === 401) {
-            // axiosConfig will handle redirect to login, no need for toast here
-            console.log("Token expired, will be redirected to login");
+            // axiosConfig will handle redirect to login
           } else if (error.response?.status === 404) {
             toast.error("Không tìm thấy người dùng này");
           } else if (error.response) {
@@ -332,7 +341,6 @@ const Profile: React.FC = () => {
 
   const handleSendMessage = () => {
     if (!user) return;
-    console.log("Send message to:", user.name);
     toast.info("Tính năng nhắn tin đang được phát triển");
   };
 
@@ -425,13 +433,164 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleComment = (postId: number) => {
-    console.log("Comment on post:", postId);
-    toast.info("Tính năng comment đang được phát triển");
+  const handleComment = async (postId: number) => {
+    try {
+      setLoadingComments(true);
+      const comments = await getComments(postId);
+      setCommentsModal({ postId, comments });
+
+      // Check like status for all comments
+      const likedSet = new Set<number>();
+      const checkLikes = async (commentList: CommentType[]) => {
+        for (const c of commentList) {
+          try {
+            const isLiked = await checkCommentLike(c.id);
+            if (isLiked) likedSet.add(c.id);
+          } catch {
+            // Ignore
+          }
+          if (c.replies) await checkLikes(c.replies);
+        }
+      };
+      await checkLikes(comments);
+      setLikedComments(likedSet);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      toast.error("Không thể tải bình luận");
+    } finally {
+      setLoadingComments(false);
+    }
   };
 
-  const handleShare = (postId: number) => {
-    console.log("Share post:", postId);
+  const handleSubmitComment = async () => {
+    if (!commentsModal || !newComment.trim()) return;
+    const currentUserId = Number(auth.user?.id);
+    if (!currentUserId) {
+      toast.error("Vui lòng đăng nhập");
+      return;
+    }
+    try {
+      const comment = await createComment(
+        commentsModal.postId,
+        newComment,
+        currentUserId
+      );
+      setCommentsModal({
+        ...commentsModal,
+        comments: [comment, ...commentsModal.comments],
+      });
+      setNewComment("");
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === commentsModal.postId
+            ? { ...p, stats: { ...p.stats, comments: p.stats.comments + 1 } }
+            : p
+        )
+      );
+      toast.success("Đã bình luận");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      toast.error("Không thể gửi bình luận");
+    }
+  };
+
+  const handleSubmitReply = async (commentId: number) => {
+    if (!commentsModal || !replyText.trim()) return;
+    const currentUserId = Number(auth.user?.id);
+    if (!currentUserId) {
+      toast.error("Vui lòng đăng nhập");
+      return;
+    }
+    try {
+      await createComment(
+        commentsModal.postId,
+        replyText,
+        currentUserId,
+        commentId
+      );
+      // Reload replies để hiển thị reply mới
+      const replies = await getReplies(commentsModal.postId, commentId);
+      setCommentsModal({
+        ...commentsModal,
+        comments: commentsModal.comments.map((c) =>
+          c.id === commentId
+            ? {
+                ...c,
+                replyCount: replies.length,
+                replies,
+              }
+            : c
+        ),
+      });
+      setReplyText("");
+      setReplyingTo(null);
+      toast.success("Đã trả lời");
+    } catch (error) {
+      console.error("Error creating reply:", error);
+      toast.error("Không thể gửi trả lời");
+    }
+  };
+
+  const handleLoadReplies = async (commentId: number) => {
+    if (!commentsModal) return;
+    try {
+      const replies = await getReplies(commentsModal.postId, commentId);
+      setCommentsModal({
+        ...commentsModal,
+        comments: commentsModal.comments.map((c) =>
+          c.id === commentId ? { ...c, replies } : c
+        ),
+      });
+      setExpandedReplies((prev) => new Set(prev).add(commentId));
+    } catch (error) {
+      console.error("Error fetching replies:", error);
+      toast.error("Không thể tải trả lời");
+    }
+  };
+
+  const closeCommentsModal = () => {
+    setCommentsModal(null);
+    setNewComment("");
+    setReplyingTo(null);
+    setReplyText("");
+    setExpandedReplies(new Set());
+    setLikedComments(new Set());
+  };
+
+  const handleLikeComment = async (commentId: number) => {
+    const isLiked = likedComments.has(commentId);
+    try {
+      if (isLiked) {
+        await unlikeComment(commentId);
+        setLikedComments((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(commentId);
+          return newSet;
+        });
+      } else {
+        await likeComment(commentId);
+        setLikedComments((prev) => new Set(prev).add(commentId));
+      }
+      // Update like count in modal
+      if (commentsModal) {
+        const updateLikeCount = (c: CommentType): CommentType => ({
+          ...c,
+          likeCount:
+            c.id === commentId ? c.likeCount + (isLiked ? -1 : 1) : c.likeCount,
+          replies: c.replies?.map(updateLikeCount) || null,
+        });
+        setCommentsModal({
+          ...commentsModal,
+          comments: commentsModal.comments.map(updateLikeCount),
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling comment like:", error);
+      toast.error("Không thể thực hiện thao tác");
+    }
+  };
+
+  const handleShare = () => {
     toast.info("Tính năng share đang được phát triển");
   };
 
@@ -707,7 +866,7 @@ const Profile: React.FC = () => {
                     </button>
                     <button
                       className="post-action"
-                      onClick={() => handleShare(post.id)}
+                      onClick={() => handleShare()}
                     >
                       <svg
                         width="20"
@@ -837,6 +996,234 @@ const Profile: React.FC = () => {
                     </div>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comments Modal */}
+      {commentsModal && (
+        <div className="likes-modal-overlay" onClick={closeCommentsModal}>
+          <div className="comments-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="likes-modal-header">
+              <h3>Bình luận</h3>
+              <button
+                className="likes-modal-close"
+                onClick={closeCommentsModal}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="comments-modal-body">
+              {loadingComments ? (
+                <div className="likes-modal-loading">Đang tải...</div>
+              ) : (
+                <>
+                  <div className="comment-input-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Viết bình luận..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleSubmitComment()
+                      }
+                    />
+                    <button onClick={handleSubmitComment}>Gửi</button>
+                  </div>
+                  {commentsModal.comments.length === 0 ? (
+                    <div className="likes-modal-empty">Chưa có bình luận</div>
+                  ) : (
+                    commentsModal.comments.map((comment) => (
+                      <div key={comment.id} className="comment-item">
+                        <img
+                          src={
+                            comment.user.profilePicture ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              comment.user.fullName || comment.user.username
+                            )}&background=1877f2&color=fff&size=40`
+                          }
+                          alt=""
+                          className="comment-avatar"
+                          onClick={() => {
+                            closeCommentsModal();
+                            navigate(`/profile/${comment.user.id}`);
+                          }}
+                        />
+                        <div className="comment-content">
+                          <div className="comment-bubble">
+                            <span
+                              className="comment-author"
+                              onClick={() => {
+                                closeCommentsModal();
+                                navigate(`/profile/${comment.user.id}`);
+                              }}
+                            >
+                              {comment.user.fullName || comment.user.username}
+                            </span>
+                            <p className="comment-text">
+                              {comment.commentText}
+                            </p>
+                          </div>
+                          <div className="comment-actions">
+                            <button
+                              className={`comment-like-btn ${
+                                likedComments.has(comment.id) ? "liked" : ""
+                              }`}
+                              onClick={() => handleLikeComment(comment.id)}
+                            >
+                              {likedComments.has(comment.id) ? "❤️" : "🤍"}{" "}
+                              {comment.likeCount > 0 && comment.likeCount}
+                            </button>
+                            <span className="comment-time">
+                              {new Date(comment.createdAt).toLocaleDateString(
+                                "vi-VN"
+                              )}
+                            </span>
+                            <button
+                              className="comment-reply-btn"
+                              onClick={() =>
+                                setReplyingTo(
+                                  replyingTo === comment.id ? null : comment.id
+                                )
+                              }
+                            >
+                              Trả lời
+                            </button>
+                            {comment.replyCount > 0 &&
+                              !expandedReplies.has(comment.id) && (
+                                <button
+                                  className="comment-view-replies"
+                                  onClick={() => handleLoadReplies(comment.id)}
+                                >
+                                  Xem {comment.replyCount} trả lời
+                                </button>
+                              )}
+                          </div>
+                          {replyingTo === comment.id && (
+                            <div className="reply-input-wrapper">
+                              <input
+                                type="text"
+                                placeholder="Viết trả lời..."
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                onKeyDown={(e) =>
+                                  e.key === "Enter" &&
+                                  handleSubmitReply(comment.id)
+                                }
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleSubmitReply(comment.id)}
+                              >
+                                Gửi
+                              </button>
+                            </div>
+                          )}
+                          {comment.replies && comment.replies.length > 0 && (
+                            <div className="replies-list">
+                              {comment.replies.map((reply) => (
+                                <div key={reply.id} className="reply-item">
+                                  <img
+                                    src={
+                                      reply.user.profilePicture ||
+                                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                        reply.user.fullName ||
+                                          reply.user.username
+                                      )}&background=1877f2&color=fff&size=32`
+                                    }
+                                    alt=""
+                                    className="reply-avatar"
+                                    onClick={() => {
+                                      closeCommentsModal();
+                                      navigate(`/profile/${reply.user.id}`);
+                                    }}
+                                  />
+                                  <div className="reply-content">
+                                    <div className="comment-bubble">
+                                      <span
+                                        className="comment-author"
+                                        onClick={() => {
+                                          closeCommentsModal();
+                                          navigate(`/profile/${reply.user.id}`);
+                                        }}
+                                      >
+                                        {reply.user.fullName ||
+                                          reply.user.username}
+                                      </span>
+                                      <p className="comment-text">
+                                        {reply.commentText}
+                                      </p>
+                                    </div>
+                                    <div className="comment-actions">
+                                      <button
+                                        className={`comment-like-btn ${
+                                          likedComments.has(reply.id)
+                                            ? "liked"
+                                            : ""
+                                        }`}
+                                        onClick={() =>
+                                          handleLikeComment(reply.id)
+                                        }
+                                      >
+                                        {likedComments.has(reply.id)
+                                          ? "❤️"
+                                          : "🤍"}{" "}
+                                        {reply.likeCount > 0 && reply.likeCount}
+                                      </button>
+                                      <span className="comment-time">
+                                        {new Date(
+                                          reply.createdAt
+                                        ).toLocaleDateString("vi-VN")}
+                                      </span>
+                                      <button
+                                        className="comment-reply-btn"
+                                        onClick={() =>
+                                          setReplyingTo(
+                                            replyingTo === reply.id
+                                              ? null
+                                              : reply.id
+                                          )
+                                        }
+                                      >
+                                        Trả lời
+                                      </button>
+                                    </div>
+                                    {replyingTo === reply.id && (
+                                      <div className="reply-input-wrapper">
+                                        <input
+                                          type="text"
+                                          placeholder="Viết trả lời..."
+                                          value={replyText}
+                                          onChange={(e) =>
+                                            setReplyText(e.target.value)
+                                          }
+                                          onKeyDown={(e) =>
+                                            e.key === "Enter" &&
+                                            handleSubmitReply(comment.id)
+                                          }
+                                          autoFocus
+                                        />
+                                        <button
+                                          onClick={() =>
+                                            handleSubmitReply(comment.id)
+                                          }
+                                        >
+                                          Gửi
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </>
               )}
             </div>
           </div>

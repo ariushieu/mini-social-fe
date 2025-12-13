@@ -648,3 +648,240 @@
 .dark-mode .likes-modal-header h3 {
   color: #f1f5f9;
 }
+
+/* Comments Modal */
+.comments-modal {
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.comments-modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.comment-input-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.comment-input-wrapper input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  background: var(--bg, #f3f4f6);
+}
+
+.comment-input-wrapper input:focus {
+  border-color: var(--primary, #1877f2);
+}
+
+.comment-input-wrapper button {
+  padding: 8px 16px;
+  background: var(--primary, #1877f2);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.comment-input-wrapper button:hover {
+  opacity: 0.9;
+}
+
+.comment-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-bubble {
+  background: var(--bg, #f3f4f6);
+  padding: 10px 14px;
+  border-radius: 18px;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.comment-author {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text, #1f2937);
+  cursor: pointer;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.comment-author:hover {
+  text-decoration: underline;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: var(--text, #1f2937);
+  margin: 0;
+  word-break: break-word;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  padding-left: 12px;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.comment-reply-btn,
+.comment-view-replies {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  padding: 0;
+}
+
+.comment-reply-btn:hover,
+.comment-view-replies:hover {
+  text-decoration: underline;
+  color: var(--primary, #1877f2);
+}
+
+.reply-input-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reply-input-wrapper input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 18px;
+  font-size: 13px;
+  outline: none;
+  background: var(--bg, #f3f4f6);
+}
+
+.reply-input-wrapper button {
+  padding: 6px 12px;
+  background: var(--primary, #1877f2);
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.replies-list {
+  margin-top: 10px;
+  padding-left: 10px;
+  border-left: 2px solid var(--border, #e5e7eb);
+}
+
+.reply-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.reply-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.reply-content {
+  flex: 1;
+}
+
+.reply-content .comment-bubble {
+  padding: 8px 12px;
+}
+
+.reply-content .comment-time {
+  display: block;
+  margin-top: 4px;
+  padding-left: 12px;
+}
+
+/* Dark mode for comments */
+.dark-mode .comments-modal {
+  background: #1e293b;
+}
+
+.dark-mode .comment-input-wrapper input,
+.dark-mode .reply-input-wrapper input {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark-mode .comment-bubble {
+  background: #334155;
+}
+
+.dark-mode .comment-author,
+.dark-mode .comment-text {
+  color: #f1f5f9;
+}
+
+.dark-mode .replies-list {
+  border-left-color: #475569;
+}
+
+
+/* Comment Like Button */
+.comment-like-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.comment-like-btn:hover {
+  opacity: 0.8;
+}
+
+.comment-like-btn.liked {
+  color: #e74c3c;
+}
