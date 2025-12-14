@@ -577,37 +577,52 @@ const SlothuiInterface = () => {
   };
   // ⭐️ KẾT THÚC BỔ SUNG: State và hàm cho Modal xem ảnh
 
-  // Load user data from auth context
+  // Load user data from auth context and fetch profile for post count
   useEffect(() => {
-    if (auth.user) {
-      setUser({
-        id: String(auth.user.id ?? "x_ae_c_921"),
-        username: auth.user.username ? `@${auth.user.username}` : "@user",
-        displayName: auth.user.fullName || auth.user.username || "User",
-        location: "Việt Nam",
-        avatar:
-          auth.user.profilePicture ||
-          "https://ui-avatars.com/api/?name=" +
-            encodeURIComponent(
-              auth.user.fullName || auth.user.username || "User"
-            ) +
-            "&background=6366f1&color=fff&size=200",
-        stats: {
-          posts: 0,
-          followers: String(auth.user.followerCount || 0),
-          following: auth.user.followingCount || 0,
-        },
-        bio: auth.user.bio || "No bio yet",
-        contact: {
-          phone: "+84 xxx xxx xxx",
-          email: auth.user.email || "",
-          website: "www.isocial.com",
-        },
-        storyHighlights: [],
-      });
-    } else {
-      setUser(mockUser);
-    }
+    const loadUserData = async () => {
+      if (auth.user) {
+        let postCount = 0;
+
+        // Fetch profile to get actual post count
+        try {
+          const { getProfile } = await import("../../api/profile");
+          const profileData = await getProfile(Number(auth.user.id));
+          postCount = profileData.posts?.length || 0;
+        } catch (error) {
+          console.error("Error fetching profile for post count:", error);
+        }
+
+        setUser({
+          id: String(auth.user.id ?? "x_ae_c_921"),
+          username: auth.user.username ? `@${auth.user.username}` : "@user",
+          displayName: auth.user.fullName || auth.user.username || "User",
+          location: "Việt Nam",
+          avatar:
+            auth.user.profilePicture ||
+            "https://ui-avatars.com/api/?name=" +
+              encodeURIComponent(
+                auth.user.fullName || auth.user.username || "User"
+              ) +
+              "&background=6366f1&color=fff&size=200",
+          stats: {
+            posts: postCount,
+            followers: String(auth.user.followerCount || 0),
+            following: auth.user.followingCount || 0,
+          },
+          bio: auth.user.bio || "No bio yet",
+          contact: {
+            phone: "+84 xxx xxx xxx",
+            email: auth.user.email || "",
+            website: "www.isocial.com",
+          },
+          storyHighlights: [],
+        });
+      } else {
+        setUser(mockUser);
+      }
+    };
+
+    loadUserData();
   }, [auth.user]);
 
   // Fetch trending posts for "For You" tab
