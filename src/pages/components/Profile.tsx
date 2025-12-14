@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  Search,
+  Home,
+  Users,
+  Settings,
+  HelpCircle,
+  Moon,
+  Sun,
+  LogOut,
+} from "lucide-react";
 import "../../styles/components/Profile.css";
 import { getProfile } from "../../api/profile";
 import {
@@ -663,572 +673,717 @@ const Profile: React.FC = () => {
 
   return (
     <div className={`profile-page-wrapper ${isDarkMode ? "dark-mode" : ""}`}>
-      {/* Cover + Profile Header - Full Width */}
-      <div className="profile-header-section">
-        <div className="profile-cover">
-          <button onClick={() => navigate("/")} className="profile-back-btn">
-            ← Trang chủ
-          </button>
-        </div>
-        <div className="profile-header-container">
-          <div className="profile-header-row">
-            <div className="profile-avatar-wrapper">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="profile-avatar-img"
+      <div className={`slothui-container ${isDarkMode ? "dark" : ""}`}>
+        {/* Sidebar */}
+        <div className="sidebar">
+          <div className="sidebar-logo">
+            <div className="logo-container">
+              <div className="logo-icon">
+                <img className="picture-logo" src="/public/images/logo.jpg" />
+              </div>
+              <span className="logo-title">iSocial</span>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="search-container">
+            <div className="search-wrapper">
+              <Search className="search-icon" />
+              <input
+                type="text"
+                placeholder="Tìm Kiếm..."
+                className="search-input"
               />
             </div>
-            <div className="profile-info">
-              <h1 className="profile-name">{user.name}</h1>
-              <p className="profile-friends">
-                <span
-                  className="profile-follow-link"
-                  onClick={handleShowFollowers}
-                >
-                  {user.followerCount?.toLocaleString() || 0} người theo dõi
-                </span>
-                {" · "}
-                <span
-                  className="profile-follow-link"
-                  onClick={handleShowFollowing}
-                >
-                  {user.followingCount?.toLocaleString() || 0} đang theo dõi
-                </span>
-              </p>
-            </div>
-            {String(auth.user?.id) !== String(userId) && (
-              <div className="profile-actions">
-                <button
-                  className="profile-btn-primary"
-                  onClick={handleSendMessage}
-                >
-                  Nhắn tin
-                </button>
-                <button
-                  className={`profile-btn-secondary ${
-                    isFollowing ? "following" : ""
-                  }`}
-                  onClick={handleFollow}
-                  disabled={followLoading}
-                >
-                  {followLoading
-                    ? "..."
-                    : isFollowing
-                    ? "Đang theo dõi"
-                    : "Theo dõi"}
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="profile-tabs">
-            <span className="profile-tab active">Bài viết</span>
-            <span className="profile-tab">Giới thiệu</span>
-            <span className="profile-tab">Ảnh</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Content Area - 2 columns */}
-      <div className="profile-content">
-        {/* Left Sidebar */}
-        <div className="profile-sidebar">
-          <div className="profile-card">
-            <h3 className="profile-card-title">Giới thiệu</h3>
-            <p className="profile-bio">{user.about.description[0]}</p>
-            <div className="profile-info-list">
-              <div className="profile-info-row">
-                <span className="profile-info-icon">📍</span>
-                <span className="profile-info-text">
-                  Sống tại <strong>{user.location}</strong>
-                </span>
-              </div>
-              {user.joinDate && (
-                <div className="profile-info-row">
-                  <span className="profile-info-icon">📅</span>
-                  <span className="profile-info-text">
-                    Tham gia <strong>{user.joinDate}</strong>
-                  </span>
-                </div>
-              )}
-              {user.lastLogin && (
-                <div className="profile-info-row">
-                  <span className="profile-info-icon">🕐</span>
-                  <span className="profile-info-text">
-                    Đăng nhập lần cuối <strong>{user.lastLogin}</strong>
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
 
-          <div className="profile-card">
-            <h3 className="profile-card-title">Gợi ý theo dõi</h3>
-            {similarProfiles.map((profile) => (
-              <div key={profile.id} className="profile-suggest-item">
-                <img
-                  src={profile.avatar}
-                  alt=""
-                  className="profile-suggest-avatar"
-                />
-                <div className="profile-suggest-info">
-                  <span className="profile-suggest-name">{profile.name}</span>
-                  <span className="profile-suggest-role">
-                    {profile.industry}
-                  </span>
+          {/* Navigation */}
+          <nav className="nav-container">
+            <div className="nav-list">
+              <div
+                className="nav-item"
+                onClick={() => navigate("/")}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="nav-item-content">
+                  <Home className="nav-icon" />
+                  <span className="nav-text">Home</span>
                 </div>
               </div>
-            ))}
+
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <Users className="nav-icon" />
+                  <span className="nav-text">Users</span>
+                </div>
+              </div>
+
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <Settings className="nav-icon" />
+                  <span className="nav-text">Settings</span>
+                </div>
+                <button
+                  onClick={() => setIsDarkMode((prev) => !prev)}
+                  className="nav-dark-toggle"
+                  aria-label="Toggle dark mode"
+                >
+                  {isDarkMode ? (
+                    <Sun className="w-4 h-4" />
+                  ) : (
+                    <Moon className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+
+              <div className="nav-item">
+                <div className="nav-item-content">
+                  <HelpCircle className="nav-icon" />
+                  <span className="nav-text">Help & Support</span>
+                </div>
+              </div>
+
+              <div
+                className="nav-item"
+                onClick={auth.logout}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="nav-item-content">
+                  <LogOut className="nav-icon" />
+                  <span className="nav-text">Đăng xuất</span>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* User Profile at bottom */}
+          <div
+            className="user-profile-bottom"
+            onClick={() => navigate(`/profile/${auth.user?.id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            <div className="user-profile-info">
+              <img
+                src={
+                  auth.user?.profilePicture ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    auth.user?.fullName || auth.user?.username || "User"
+                  )}&background=6366f1&color=fff&size=200`
+                }
+                alt="User"
+                className="user-avatar-small"
+              />
+              <div className="flex-1">
+                <div className="user-name">
+                  {auth.user?.fullName || auth.user?.username || "User"}
+                </div>
+                <div className="user-role">Basic Member</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right - Posts */}
-        <div className="profile-main">
-          <div className="profile-card">
-            <h3 className="profile-card-title">Bài viết</h3>
-            {posts.length === 0 ? (
-              <p className="profile-no-posts">Chưa có bài viết nào.</p>
-            ) : (
-              posts.map((post) => (
-                <div key={post.id} className="post-item">
-                  <div className="post-header">
-                    <img src={post.avatar} alt="" className="post-avatar" />
-                    <div className="post-meta">
-                      <span className="post-author">{post.author}</span>
-                      <span className="post-time">{post.time}</span>
-                    </div>
-                  </div>
-                  <p className="post-text">{post.content}</p>
-                  {post.images && post.images.length > 0 && (
-                    <div
-                      className={`post-images post-images-${Math.min(
-                        post.images.length,
-                        4
-                      )}`}
+        {/* Main Content */}
+        <div className="main-content">
+          {/* Cover + Profile Header */}
+          <div className="profile-header-section">
+            <div className="profile-cover"></div>
+            <div className="profile-header-container">
+              <div className="profile-header-row">
+                <div className="profile-avatar-wrapper">
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="profile-avatar-img"
+                  />
+                </div>
+                <div className="profile-info">
+                  <h1 className="profile-name">{user.name}</h1>
+                  <p className="profile-friends">
+                    <span
+                      className="profile-follow-link"
+                      onClick={handleShowFollowers}
                     >
-                      {post.images.slice(0, 4).map((img, idx) => (
-                        <div key={idx} className="post-image-item">
-                          <img src={img} alt="" />
-                          {idx === 3 && post.images!.length > 4 && (
-                            <div className="post-image-more">
-                              +{post.images!.length - 4}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                      {user.followerCount?.toLocaleString() || 0} người theo dõi
+                    </span>
+                    {" · "}
+                    <span
+                      className="profile-follow-link"
+                      onClick={handleShowFollowing}
+                    >
+                      {user.followingCount?.toLocaleString() || 0} đang theo dõi
+                    </span>
+                  </p>
+                </div>
+                {String(auth.user?.id) !== String(userId) && (
+                  <div className="profile-actions">
+                    <button
+                      className="profile-btn-primary"
+                      onClick={handleSendMessage}
+                    >
+                      Nhắn tin
+                    </button>
+                    <button
+                      className={`profile-btn-secondary ${
+                        isFollowing ? "following" : ""
+                      }`}
+                      onClick={handleFollow}
+                      disabled={followLoading}
+                    >
+                      {followLoading
+                        ? "..."
+                        : isFollowing
+                        ? "Đang theo dõi"
+                        : "Theo dõi"}
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="profile-tabs">
+                <span className="profile-tab active">Bài viết</span>
+                <span className="profile-tab">Giới thiệu</span>
+                <span className="profile-tab">Ảnh</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area - 2 columns */}
+          <div className="profile-content">
+            {/* Left Sidebar */}
+            <div className="profile-sidebar">
+              <div className="profile-card">
+                <h3 className="profile-card-title">Giới thiệu</h3>
+                <p className="profile-bio">{user.about.description[0]}</p>
+                <div className="profile-info-list">
+                  <div className="profile-info-row">
+                    <span className="profile-info-icon">📍</span>
+                    <span className="profile-info-text">
+                      Sống tại <strong>{user.location}</strong>
+                    </span>
+                  </div>
+                  {user.joinDate && (
+                    <div className="profile-info-row">
+                      <span className="profile-info-icon">📅</span>
+                      <span className="profile-info-text">
+                        Tham gia <strong>{user.joinDate}</strong>
+                      </span>
                     </div>
                   )}
-                  <div className="post-stats">
-                    <span
-                      className="post-stats-likes"
-                      onClick={() => handleShowLikes(post.id)}
-                    >
-                      {post.stats.likes} lượt thích
-                    </span>
-                    <span>{post.stats.comments} bình luận</span>
-                  </div>
-                  <div className="post-actions">
-                    <button
-                      className={`post-action ${
-                        likedPosts.has(post.id) ? "liked" : ""
-                      }`}
-                      onClick={() => handleLike(post.id)}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill={likedPosts.has(post.id) ? "#e74c3c" : "none"}
-                        stroke={
-                          likedPosts.has(post.id) ? "#e74c3c" : "currentColor"
-                        }
-                        strokeWidth="2"
-                      >
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                      </svg>
-                      {likedPosts.has(post.id) ? "Đã thích" : "Thích"}
-                    </button>
-                    <button
-                      className="post-action"
-                      onClick={() => handleComment(post.id)}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                      </svg>
-                      Bình luận
-                    </button>
-                    <button
-                      className="post-action"
-                      onClick={() => handleShare()}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                        <polyline points="16 6 12 2 8 6" />
-                        <line x1="12" y1="2" x2="12" y2="15" />
-                      </svg>
-                      Chia sẻ
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Likes Modal */}
-      {likesModal && (
-        <div className="likes-modal-overlay" onClick={closeLikesModal}>
-          <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="likes-modal-header">
-              <h3>Người đã thích</h3>
-              <button className="likes-modal-close" onClick={closeLikesModal}>
-                ✕
-              </button>
-            </div>
-            <div className="likes-modal-body">
-              {loadingLikes ? (
-                <div className="likes-modal-loading">Đang tải...</div>
-              ) : likesModal.users.length === 0 ? (
-                <div className="likes-modal-empty">
-                  Chưa có ai thích bài viết này
-                </div>
-              ) : (
-                likesModal.users.map((likeUser) => (
-                  <div
-                    key={likeUser.id}
-                    className="likes-modal-user"
-                    onClick={() => {
-                      closeLikesModal();
-                      navigate(`/profile/${likeUser.id}`);
-                    }}
-                  >
-                    <img
-                      src={
-                        likeUser.profilePicture ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          likeUser.fullName || likeUser.username
-                        )}&background=1877f2&color=fff&size=40`
-                      }
-                      alt=""
-                      className="likes-modal-avatar"
-                    />
-                    <div className="likes-modal-info">
-                      <span className="likes-modal-name">
-                        {likeUser.fullName || likeUser.username}
+                  {user.lastLogin && (
+                    <div className="profile-info-row">
+                      <span className="profile-info-icon">🕐</span>
+                      <span className="profile-info-text">
+                        Đăng nhập lần cuối <strong>{user.lastLogin}</strong>
                       </span>
-                      <span className="likes-modal-username">
-                        @{likeUser.username}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="profile-card">
+                <h3 className="profile-card-title">Gợi ý theo dõi</h3>
+                {similarProfiles.map((profile) => (
+                  <div key={profile.id} className="profile-suggest-item">
+                    <img
+                      src={profile.avatar}
+                      alt=""
+                      className="profile-suggest-avatar"
+                    />
+                    <div className="profile-suggest-info">
+                      <span className="profile-suggest-name">
+                        {profile.name}
+                      </span>
+                      <span className="profile-suggest-role">
+                        {profile.industry}
                       </span>
                     </div>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Follow Modal */}
-      {followModal && (
-        <div className="likes-modal-overlay" onClick={closeFollowModal}>
-          <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="likes-modal-header">
-              <h3>
-                {followModal.type === "followers"
-                  ? "Người theo dõi"
-                  : "Đang theo dõi"}
-              </h3>
-              <button className="likes-modal-close" onClick={closeFollowModal}>
-                ✕
-              </button>
-            </div>
-            <div className="likes-modal-body">
-              {loadingFollow ? (
-                <div className="likes-modal-loading">Đang tải...</div>
-              ) : followModal.users.length === 0 ? (
-                <div className="likes-modal-empty">
-                  {followModal.type === "followers"
-                    ? "Chưa có người theo dõi"
-                    : "Chưa theo dõi ai"}
-                </div>
-              ) : (
-                followModal.users.map((followUser) => (
-                  <div
-                    key={followUser.id}
-                    className="likes-modal-user"
-                    onClick={() => {
-                      closeFollowModal();
-                      navigate(`/profile/${followUser.id}`);
-                    }}
-                  >
-                    <img
-                      src={
-                        followUser.profilePicture ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          followUser.fullName || followUser.username
-                        )}&background=1877f2&color=fff&size=40`
-                      }
-                      alt=""
-                      className="likes-modal-avatar"
-                    />
-                    <div className="likes-modal-info">
-                      <span className="likes-modal-name">
-                        {followUser.fullName || followUser.username}
-                      </span>
-                      <span className="likes-modal-username">
-                        @{followUser.username}
-                      </span>
+            {/* Right - Posts */}
+            <div className="profile-main">
+              <div className="profile-card">
+                <h3 className="profile-card-title">Bài viết</h3>
+                {posts.length === 0 ? (
+                  <p className="profile-no-posts">Chưa có bài viết nào.</p>
+                ) : (
+                  posts.map((post) => (
+                    <div key={post.id} className="post-item">
+                      <div className="post-header">
+                        <img src={post.avatar} alt="" className="post-avatar" />
+                        <div className="post-meta">
+                          <span className="post-author">{post.author}</span>
+                          <span className="post-time">{post.time}</span>
+                        </div>
+                      </div>
+                      <p className="post-text">{post.content}</p>
+                      {post.images && post.images.length > 0 && (
+                        <div
+                          className={`post-images post-images-${Math.min(
+                            post.images.length,
+                            4
+                          )}`}
+                        >
+                          {post.images.slice(0, 4).map((img, idx) => (
+                            <div key={idx} className="post-image-item">
+                              <img src={img} alt="" />
+                              {idx === 3 && post.images!.length > 4 && (
+                                <div className="post-image-more">
+                                  +{post.images!.length - 4}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="post-stats">
+                        <span
+                          className="post-stats-likes"
+                          onClick={() => handleShowLikes(post.id)}
+                        >
+                          {post.stats.likes} lượt thích
+                        </span>
+                        <span>{post.stats.comments} bình luận</span>
+                      </div>
+                      <div className="post-actions">
+                        <button
+                          className={`post-action ${
+                            likedPosts.has(post.id) ? "liked" : ""
+                          }`}
+                          onClick={() => handleLike(post.id)}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill={likedPosts.has(post.id) ? "#e74c3c" : "none"}
+                            stroke={
+                              likedPosts.has(post.id)
+                                ? "#e74c3c"
+                                : "currentColor"
+                            }
+                            strokeWidth="2"
+                          >
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                          </svg>
+                          {likedPosts.has(post.id) ? "Đã thích" : "Thích"}
+                        </button>
+                        <button
+                          className="post-action"
+                          onClick={() => handleComment(post.id)}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                          </svg>
+                          Bình luận
+                        </button>
+                        <button
+                          className="post-action"
+                          onClick={() => handleShare()}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
+                          </svg>
+                          Chia sẻ
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Comments Modal */}
-      {commentsModal && (
-        <div className="likes-modal-overlay" onClick={closeCommentsModal}>
-          <div className="comments-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="likes-modal-header">
-              <h3>Bình luận</h3>
-              <button
-                className="likes-modal-close"
-                onClick={closeCommentsModal}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="comments-modal-body">
-              {loadingComments ? (
-                <div className="likes-modal-loading">Đang tải...</div>
-              ) : (
-                <>
-                  <div className="comment-input-wrapper">
-                    <input
-                      type="text"
-                      placeholder="Viết bình luận..."
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && handleSubmitComment()
-                      }
-                    />
-                    <button onClick={handleSubmitComment}>Gửi</button>
-                  </div>
-                  {commentsModal.comments.length === 0 ? (
-                    <div className="likes-modal-empty">Chưa có bình luận</div>
+          {/* Likes Modal */}
+          {likesModal && (
+            <div className="likes-modal-overlay" onClick={closeLikesModal}>
+              <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="likes-modal-header">
+                  <h3>Người đã thích</h3>
+                  <button
+                    className="likes-modal-close"
+                    onClick={closeLikesModal}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="likes-modal-body">
+                  {loadingLikes ? (
+                    <div className="likes-modal-loading">Đang tải...</div>
+                  ) : likesModal.users.length === 0 ? (
+                    <div className="likes-modal-empty">
+                      Chưa có ai thích bài viết này
+                    </div>
                   ) : (
-                    commentsModal.comments.map((comment) => (
-                      <div key={comment.id} className="comment-item">
+                    likesModal.users.map((likeUser) => (
+                      <div
+                        key={likeUser.id}
+                        className="likes-modal-user"
+                        onClick={() => {
+                          closeLikesModal();
+                          navigate(`/profile/${likeUser.id}`);
+                        }}
+                      >
                         <img
                           src={
-                            comment.user.profilePicture ||
+                            likeUser.profilePicture ||
                             `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                              comment.user.fullName || comment.user.username
+                              likeUser.fullName || likeUser.username
                             )}&background=1877f2&color=fff&size=40`
                           }
                           alt=""
-                          className="comment-avatar"
-                          onClick={() => {
-                            closeCommentsModal();
-                            navigate(`/profile/${comment.user.id}`);
-                          }}
+                          className="likes-modal-avatar"
                         />
-                        <div className="comment-content">
-                          <div className="comment-bubble">
-                            <span
-                              className="comment-author"
-                              onClick={() => {
-                                closeCommentsModal();
-                                navigate(`/profile/${comment.user.id}`);
-                              }}
-                            >
-                              {comment.user.fullName || comment.user.username}
-                            </span>
-                            <p className="comment-text">
-                              {comment.commentText}
-                            </p>
-                          </div>
-                          <div className="comment-actions">
-                            <button
-                              className={`comment-like-btn ${
-                                likedComments.has(comment.id) ? "liked" : ""
-                              }`}
-                              onClick={() => handleLikeComment(comment.id)}
-                            >
-                              {likedComments.has(comment.id) ? "❤️" : "🤍"}{" "}
-                              {comment.likeCount > 0 && comment.likeCount}
-                            </button>
-                            <span className="comment-time">
-                              {new Date(comment.createdAt).toLocaleDateString(
-                                "vi-VN"
-                              )}
-                            </span>
-                            <button
-                              className="comment-reply-btn"
-                              onClick={() =>
-                                setReplyingTo(
-                                  replyingTo === comment.id ? null : comment.id
-                                )
-                              }
-                            >
-                              Trả lời
-                            </button>
-                            {comment.replyCount > 0 &&
-                              !expandedReplies.has(comment.id) && (
-                                <button
-                                  className="comment-view-replies"
-                                  onClick={() => handleLoadReplies(comment.id)}
-                                >
-                                  Xem {comment.replyCount} trả lời
-                                </button>
-                              )}
-                          </div>
-                          {replyingTo === comment.id && (
-                            <div className="reply-input-wrapper">
-                              <input
-                                type="text"
-                                placeholder="Viết trả lời..."
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                onKeyDown={(e) =>
-                                  e.key === "Enter" &&
-                                  handleSubmitReply(comment.id)
-                                }
-                                autoFocus
-                              />
-                              <button
-                                onClick={() => handleSubmitReply(comment.id)}
-                              >
-                                Gửi
-                              </button>
-                            </div>
-                          )}
-                          {comment.replies && comment.replies.length > 0 && (
-                            <div className="replies-list">
-                              {comment.replies.map((reply) => (
-                                <div key={reply.id} className="reply-item">
-                                  <img
-                                    src={
-                                      reply.user.profilePicture ||
-                                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                        reply.user.fullName ||
-                                          reply.user.username
-                                      )}&background=1877f2&color=fff&size=32`
-                                    }
-                                    alt=""
-                                    className="reply-avatar"
-                                    onClick={() => {
-                                      closeCommentsModal();
-                                      navigate(`/profile/${reply.user.id}`);
-                                    }}
-                                  />
-                                  <div className="reply-content">
-                                    <div className="comment-bubble">
-                                      <span
-                                        className="comment-author"
-                                        onClick={() => {
-                                          closeCommentsModal();
-                                          navigate(`/profile/${reply.user.id}`);
-                                        }}
-                                      >
-                                        {reply.user.fullName ||
-                                          reply.user.username}
-                                      </span>
-                                      <p className="comment-text">
-                                        {reply.commentText}
-                                      </p>
-                                    </div>
-                                    <div className="comment-actions">
-                                      <button
-                                        className={`comment-like-btn ${
-                                          likedComments.has(reply.id)
-                                            ? "liked"
-                                            : ""
-                                        }`}
-                                        onClick={() =>
-                                          handleLikeComment(reply.id)
-                                        }
-                                      >
-                                        {likedComments.has(reply.id)
-                                          ? "❤️"
-                                          : "🤍"}{" "}
-                                        {reply.likeCount > 0 && reply.likeCount}
-                                      </button>
-                                      <span className="comment-time">
-                                        {new Date(
-                                          reply.createdAt
-                                        ).toLocaleDateString("vi-VN")}
-                                      </span>
-                                      <button
-                                        className="comment-reply-btn"
-                                        onClick={() =>
-                                          setReplyingTo(
-                                            replyingTo === reply.id
-                                              ? null
-                                              : reply.id
-                                          )
-                                        }
-                                      >
-                                        Trả lời
-                                      </button>
-                                    </div>
-                                    {replyingTo === reply.id && (
-                                      <div className="reply-input-wrapper">
-                                        <input
-                                          type="text"
-                                          placeholder="Viết trả lời..."
-                                          value={replyText}
-                                          onChange={(e) =>
-                                            setReplyText(e.target.value)
-                                          }
-                                          onKeyDown={(e) =>
-                                            e.key === "Enter" &&
-                                            handleSubmitReply(comment.id)
-                                          }
-                                          autoFocus
-                                        />
-                                        <button
-                                          onClick={() =>
-                                            handleSubmitReply(comment.id)
-                                          }
-                                        >
-                                          Gửi
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                        <div className="likes-modal-info">
+                          <span className="likes-modal-name">
+                            {likeUser.fullName || likeUser.username}
+                          </span>
+                          <span className="likes-modal-username">
+                            @{likeUser.username}
+                          </span>
                         </div>
                       </div>
                     ))
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Follow Modal */}
+          {followModal && (
+            <div className="likes-modal-overlay" onClick={closeFollowModal}>
+              <div className="likes-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="likes-modal-header">
+                  <h3>
+                    {followModal.type === "followers"
+                      ? "Người theo dõi"
+                      : "Đang theo dõi"}
+                  </h3>
+                  <button
+                    className="likes-modal-close"
+                    onClick={closeFollowModal}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="likes-modal-body">
+                  {loadingFollow ? (
+                    <div className="likes-modal-loading">Đang tải...</div>
+                  ) : followModal.users.length === 0 ? (
+                    <div className="likes-modal-empty">
+                      {followModal.type === "followers"
+                        ? "Chưa có người theo dõi"
+                        : "Chưa theo dõi ai"}
+                    </div>
+                  ) : (
+                    followModal.users.map((followUser) => (
+                      <div
+                        key={followUser.id}
+                        className="likes-modal-user"
+                        onClick={() => {
+                          closeFollowModal();
+                          navigate(`/profile/${followUser.id}`);
+                        }}
+                      >
+                        <img
+                          src={
+                            followUser.profilePicture ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              followUser.fullName || followUser.username
+                            )}&background=1877f2&color=fff&size=40`
+                          }
+                          alt=""
+                          className="likes-modal-avatar"
+                        />
+                        <div className="likes-modal-info">
+                          <span className="likes-modal-name">
+                            {followUser.fullName || followUser.username}
+                          </span>
+                          <span className="likes-modal-username">
+                            @{followUser.username}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Comments Modal */}
+          {commentsModal && (
+            <div className="likes-modal-overlay" onClick={closeCommentsModal}>
+              <div
+                className="comments-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="likes-modal-header">
+                  <h3>Bình luận</h3>
+                  <button
+                    className="likes-modal-close"
+                    onClick={closeCommentsModal}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="comments-modal-body">
+                  {loadingComments ? (
+                    <div className="likes-modal-loading">Đang tải...</div>
+                  ) : (
+                    <>
+                      <div className="comment-input-wrapper">
+                        <input
+                          type="text"
+                          placeholder="Viết bình luận..."
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && handleSubmitComment()
+                          }
+                        />
+                        <button onClick={handleSubmitComment}>Gửi</button>
+                      </div>
+                      {commentsModal.comments.length === 0 ? (
+                        <div className="likes-modal-empty">
+                          Chưa có bình luận
+                        </div>
+                      ) : (
+                        commentsModal.comments.map((comment) => (
+                          <div key={comment.id} className="comment-item">
+                            <img
+                              src={
+                                comment.user.profilePicture ||
+                                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                  comment.user.fullName || comment.user.username
+                                )}&background=1877f2&color=fff&size=40`
+                              }
+                              alt=""
+                              className="comment-avatar"
+                              onClick={() => {
+                                closeCommentsModal();
+                                navigate(`/profile/${comment.user.id}`);
+                              }}
+                            />
+                            <div className="comment-content">
+                              <div className="comment-bubble">
+                                <span
+                                  className="comment-author"
+                                  onClick={() => {
+                                    closeCommentsModal();
+                                    navigate(`/profile/${comment.user.id}`);
+                                  }}
+                                >
+                                  {comment.user.fullName ||
+                                    comment.user.username}
+                                </span>
+                                <p className="comment-text">
+                                  {comment.commentText}
+                                </p>
+                              </div>
+                              <div className="comment-actions">
+                                <button
+                                  className={`comment-like-btn ${
+                                    likedComments.has(comment.id) ? "liked" : ""
+                                  }`}
+                                  onClick={() => handleLikeComment(comment.id)}
+                                >
+                                  {likedComments.has(comment.id) ? "❤️" : "🤍"}{" "}
+                                  {comment.likeCount > 0 && comment.likeCount}
+                                </button>
+                                <span className="comment-time">
+                                  {new Date(
+                                    comment.createdAt
+                                  ).toLocaleDateString("vi-VN")}
+                                </span>
+                                <button
+                                  className="comment-reply-btn"
+                                  onClick={() =>
+                                    setReplyingTo(
+                                      replyingTo === comment.id
+                                        ? null
+                                        : comment.id
+                                    )
+                                  }
+                                >
+                                  Trả lời
+                                </button>
+                                {comment.replyCount > 0 &&
+                                  !expandedReplies.has(comment.id) && (
+                                    <button
+                                      className="comment-view-replies"
+                                      onClick={() =>
+                                        handleLoadReplies(comment.id)
+                                      }
+                                    >
+                                      Xem {comment.replyCount} trả lời
+                                    </button>
+                                  )}
+                              </div>
+                              {replyingTo === comment.id && (
+                                <div className="reply-input-wrapper">
+                                  <input
+                                    type="text"
+                                    placeholder="Viết trả lời..."
+                                    value={replyText}
+                                    onChange={(e) =>
+                                      setReplyText(e.target.value)
+                                    }
+                                    onKeyDown={(e) =>
+                                      e.key === "Enter" &&
+                                      handleSubmitReply(comment.id)
+                                    }
+                                    autoFocus
+                                  />
+                                  <button
+                                    onClick={() =>
+                                      handleSubmitReply(comment.id)
+                                    }
+                                  >
+                                    Gửi
+                                  </button>
+                                </div>
+                              )}
+                              {comment.replies &&
+                                comment.replies.length > 0 && (
+                                  <div className="replies-list">
+                                    {comment.replies.map((reply) => (
+                                      <div
+                                        key={reply.id}
+                                        className="reply-item"
+                                      >
+                                        <img
+                                          src={
+                                            reply.user.profilePicture ||
+                                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                              reply.user.fullName ||
+                                                reply.user.username
+                                            )}&background=1877f2&color=fff&size=32`
+                                          }
+                                          alt=""
+                                          className="reply-avatar"
+                                          onClick={() => {
+                                            closeCommentsModal();
+                                            navigate(
+                                              `/profile/${reply.user.id}`
+                                            );
+                                          }}
+                                        />
+                                        <div className="reply-content">
+                                          <div className="comment-bubble">
+                                            <span
+                                              className="comment-author"
+                                              onClick={() => {
+                                                closeCommentsModal();
+                                                navigate(
+                                                  `/profile/${reply.user.id}`
+                                                );
+                                              }}
+                                            >
+                                              {reply.user.fullName ||
+                                                reply.user.username}
+                                            </span>
+                                            <p className="comment-text">
+                                              {reply.commentText}
+                                            </p>
+                                          </div>
+                                          <div className="comment-actions">
+                                            <button
+                                              className={`comment-like-btn ${
+                                                likedComments.has(reply.id)
+                                                  ? "liked"
+                                                  : ""
+                                              }`}
+                                              onClick={() =>
+                                                handleLikeComment(reply.id)
+                                              }
+                                            >
+                                              {likedComments.has(reply.id)
+                                                ? "❤️"
+                                                : "🤍"}{" "}
+                                              {reply.likeCount > 0 &&
+                                                reply.likeCount}
+                                            </button>
+                                            <span className="comment-time">
+                                              {new Date(
+                                                reply.createdAt
+                                              ).toLocaleDateString("vi-VN")}
+                                            </span>
+                                            <button
+                                              className="comment-reply-btn"
+                                              onClick={() =>
+                                                setReplyingTo(
+                                                  replyingTo === reply.id
+                                                    ? null
+                                                    : reply.id
+                                                )
+                                              }
+                                            >
+                                              Trả lời
+                                            </button>
+                                          </div>
+                                          {replyingTo === reply.id && (
+                                            <div className="reply-input-wrapper">
+                                              <input
+                                                type="text"
+                                                placeholder="Viết trả lời..."
+                                                value={replyText}
+                                                onChange={(e) =>
+                                                  setReplyText(e.target.value)
+                                                }
+                                                onKeyDown={(e) =>
+                                                  e.key === "Enter" &&
+                                                  handleSubmitReply(comment.id)
+                                                }
+                                                autoFocus
+                                              />
+                                              <button
+                                                onClick={() =>
+                                                  handleSubmitReply(comment.id)
+                                                }
+                                              >
+                                                Gửi
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+        {/* End main-content */}
+      </div>
+      {/* End slothui-container */}
     </div>
   );
 };
