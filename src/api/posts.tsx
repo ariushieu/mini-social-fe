@@ -109,6 +109,17 @@ export const getFollowingFeed = async (
   return response.data;
 };
 
+// Get trending posts for "For You" tab
+export const getTrendingPosts = async (
+  page = 0,
+  size = 10
+): Promise<NewsfeedResponse> => {
+  const response = await axios.get<NewsfeedResponse>(
+    `${API_V1_URL}/trending?page=${page}&size=${size}`
+  );
+  return response.data;
+};
+
 export default {
   createPost,
   getPosts,
@@ -120,4 +131,5 @@ export default {
   checkLike,
   getLikes,
   getFollowingFeed,
+  getTrendingPosts,
 };
